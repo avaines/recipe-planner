@@ -1,6 +1,5 @@
 {
   "projects": {
-    "default": "recipe-planner-prod",
-    "development": "recipe-planner-dev"
+    "default": "recipe-planner-prod"
   }
 }
