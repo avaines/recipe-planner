@@ -1,4 +1,4 @@
-name: deploy-from-main
+name: Deploy to Live Channel
 
 on:
   push:
