@@ -1,0 +1,10 @@
+component to show all recepies
+  use a list view
+    edit one of the items
+    delete button
+  (just rip off one of those TODO tutorials and extend)
+  list box or something for the ingredients
+
+
+
+component for calendar + shopping list
