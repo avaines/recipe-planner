@@ -13,17 +13,29 @@ const router = new Router({
         {
         path: '/login',
         name: 'login',
-        component: Login
+        component: Login,
+        meta: {
+            auth: false,
+            title: 'Login'
+        }
     },
     {
         path: '/register',
         name: 'Register',
-        component: Register
+        component: Register,
+        meta: {
+            auth: false,
+            title: 'Register'
+        }
     },
     {
         path: '/dashboard',
         name: 'Dashboard',
-        component: Dashboard
+        component: Dashboard,
+        meta: {
+            auth: true,
+            title: 'Register'
+        }
     }
 ]
 });
