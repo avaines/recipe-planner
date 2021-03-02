@@ -13,7 +13,7 @@ const router = new Router({
         {
         path: '/login',
         name: 'login',
-        component: Login
+        component: Login,
         meta: {
             auth: false,
             title: 'Login'
@@ -22,7 +22,7 @@ const router = new Router({
     {
         path: '/register',
         name: 'Register',
-        component: Register
+        component: Register,
         meta: {
             auth: false,
             title: 'Register'
@@ -31,7 +31,7 @@ const router = new Router({
     {
         path: '/dashboard',
         name: 'Dashboard',
-        component: Dashboard
+        component: Dashboard,
         meta: {
             auth: true,
             title: 'Register'
