@@ -9,6 +9,7 @@
 
 <script>
 import navbar from "./components/Navbar";
+import './static/app.css'
 
 export default {
   components: {
