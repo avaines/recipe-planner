@@ -14,6 +14,11 @@ import './static/app.css'
 export default {
   components: {
     navbar
+  },
+  watch: {
+    '$route' (to) {
+      document.title = to.meta.title || 'Recipe Planner'
+    }
   }
 };
 </script>

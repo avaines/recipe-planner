@@ -19,6 +19,8 @@ firebase.auth().onAuthStateChanged(user => {
   store.dispatch("fetchUser", user);
 });
 
+document.title = 'Recipe Planner'
+
 new Vue({
   router,
   store,
