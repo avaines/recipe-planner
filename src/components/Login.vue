@@ -83,16 +83,6 @@ export default {
       error: '',
     };
   },
-
-  signedIn() {
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.user = user;
-      } else {
-        this.user = null;
-      }
-    });
-  },
   methods: {
     signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider()
@@ -101,7 +91,8 @@ export default {
       .auth()
       .signInWithPopup(provider)
       .then(() => {
-          this.$router.push('/')
+        this.$store.commit('SET_LOGGED_IN', true)
+        this.$router.push('/')
       })
       .catch((error) => {
         alert(error.message);
@@ -113,7 +104,8 @@ export default {
       .auth()
       .signInWithEmailAndPassword(this.user.email, this.user.password)
       .then(() => {
-          this.$router.push('/')
+        this.$store.commit('SET_LOGGED_IN', true)
+        this.$router.push('/')
       })
       .catch((error) => {
         alert(error.message);

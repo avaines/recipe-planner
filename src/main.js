@@ -25,7 +25,6 @@ firebase.auth().onAuthStateChanged(user => {
 
 document.title = 'Recipe Planner'
 
-
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.auth)) {
     // this route requires auth, check if logged in
