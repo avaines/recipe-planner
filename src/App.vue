@@ -6,19 +6,13 @@
     </main>
   </div>
 </template>
-
 <script>
-import navbar from "./components/Navbar";
-import './static/app.css'
+
+import navbar from "@/components/Navbar";
 
 export default {
   components: {
     navbar
-  },
-  watch: {
-    '$route' (to) {
-      document.title = to.meta.title || 'Recipe Planner'
-    }
   }
 };
 </script>
