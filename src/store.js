@@ -1,10 +1,12 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import { db } from '@/main'
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    posts: [],
     user: {
       loggedIn: false,
       data: null
@@ -13,6 +15,9 @@ export default new Vuex.Store({
   getters: {
     user(state){
       return state.user
+    },
+    posts(state){
+      return state.posts
     }
   },
   mutations: {
@@ -21,6 +26,9 @@ export default new Vuex.Store({
     },
     SET_USER(state, data) {
       state.user.data = data;
+    },
+    setPosts: (state, posts) => {
+      state.posts = posts
     }
   },
   actions: {
@@ -34,11 +42,16 @@ export default new Vuex.Store({
       } else {
         commit("SET_USER", null);
       }
+    },
+    loadPosts: async context => {
+      let snapshot = await db.collection('posts').get()
+      const posts = []
+      snapshot.forEach(doc => {
+        let appData = doc.data()
+        appData.id = doc.id
+        posts.push(appData)
+      })
+      context.commit('setPosts', posts)
     }
   }
 });
-
-// getter for rec's from fbase
-// setter for same
-
-// getter and setter for some sort of persistence.

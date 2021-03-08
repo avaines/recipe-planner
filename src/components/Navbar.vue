@@ -14,7 +14,10 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto"></ul>
+        <ul class="navbar-nav mr-auto">
+          <li><a href="/"><strong>All Posts</strong></a></li>
+          <li><a href="/create"><strong>Create Post</strong></a></li>
+        </ul>
         <ul class="navbar-nav ml-auto">
           <template v-if="user.loggedIn">
             <li class="nav-item">

@@ -4,15 +4,15 @@ import Router from 'vue-router'
 Vue.use(Router)
 
   const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: () => import('@/components/Home.vue'),
-    meta: {
-      auth: true,
-      title: 'Home'
-    }
-  },
+  // {
+  //   path: '/',
+  //   name: 'home',
+  //   component: () => import('@/components/Home.vue'),
+  //   meta: {
+  //     auth: true,
+  //     title: 'Home'
+  //   }
+  // },
   {
     path: '/login',
     name: 'login',
@@ -47,6 +47,33 @@ Vue.use(Router)
     meta: {
       auth: true,
       title: 'Profile'
+    }
+  },
+  {
+    name: 'create',
+    path: '/create',
+    component: () => import('@/components/CreateComponent'),
+    meta: {
+      auth: true,
+      title: 'CreateComponent'
+    }
+  },
+  {
+    name: 'posts',
+    path: '/',
+    component: () => import('@/components/IndexComponent'),
+    meta: {
+      auth: true,
+      title: 'IndexComponent'
+    }
+  },
+  {
+    name: 'edit',
+    path: '/edit/:id',
+    component: () => import('@/components/EditComponent'),
+    meta: {
+      auth: true,
+      title: 'EditComponent'
     }
   }
 ]
