@@ -1,4 +1,5 @@
 import firebase from 'firebase/app';
+import store from "@/store";
 
 const firebaseConfig = {
   apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
@@ -18,6 +19,10 @@ const settings = {
     timestampsInSnapshots: true
 };
 db.settings(settings);
+
+firebase.auth().onAuthStateChanged(user => {
+  store.dispatch("fetchUser", user);
+});
 
 export {
     db
