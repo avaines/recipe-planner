@@ -1,71 +1,49 @@
 <template>
-  <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
-    <div class="container">
-      <router-link to="/" class="navbar-brand">Recipe Planner</router-link>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto"></ul>
-        <ul class="navbar-nav ml-auto">
-          <template v-if="user.loggedIn">
-            <li class="nav-item">
-               <router-link to="profile" class="nav-link">{{user.data.displayName}}</router-link>
-            </li>
+  <div id="app">
+    <div class="shadow">
+      <b-navbar toggleable="lg" type="light">
+        <b-navbar-brand href="#"><router-link to="/" class="navbar-brand">Recipe Planner</router-link></b-navbar-brand>
+        <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-            <li class="nav-item">
-              <a class="nav-link" @click="signOut">Sign out</a>
-            </li>
-          </template>
-          <template v-else>
-            <li class="nav-item">
-              <router-link to="login" class="nav-link">Login</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="signup" class="nav-link">Register</router-link>
-            </li>
-          </template>
-        </ul>
-      </div>
-    </div>
-  </nav>
-</template>
-<!-- <template>
-  <div class="vue-tempalte">
-    <nav class="navbar shadow bg-white rounded justify-content-between flex-nowrap flex-row fixed-top">
-      <div class="container">
-        <a class="navbar-brand float-left" href="/">
-           Recipe Planner
-        </a>
-        <ul class="nav navbar-nav flex-row float-right">
-          <li class="nav-item">
-            <router-link class="nav-link pr-3" to="/login">Sign in</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="btn btn-outline-primary" to="/signup">Sign up</router-link>
-          </li>
-        </ul>
-      </div>
-    </nav>
+        <template v-if="user.loggedIn">
 
-    <div class="App">
-      <div class="vertical-center">
-        <div class="inner-block">
-          <router-view />
-        </div>
-      </div>
+          <b-collapse is-nav id="nav_collapse">
+            <b-navbar-nav>
+              <b-nav-item href="/">Create Menu</b-nav-item>
+              <b-nav-item href="/create">Create Recipe</b-nav-item>
+              <b-nav-item href="/manage">Manage Recipes</b-nav-item>
+            </b-navbar-nav>
+
+            <!-- Right aligned nav items -->
+            <b-navbar-nav class="ml-auto">
+                <!-- <b-nav-form>
+                    <b-form-input size="sm" class="mr-sm-2" type="text" placeholder="Search"></b-form-input>
+                    <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
+                </b-nav-form> -->
+
+              <b-nav-item-dropdown right>
+                <!-- Using button-content slot -->
+                <template slot="button-content"><em>User</em></template>
+                <b-dropdown-item ><router-link to="profile" class="nav-link">{{user.data.displayName}}</router-link></b-dropdown-item>
+                <b-dropdown-item ><a class="nav-link" @click="signOut">Sign out</a></b-dropdown-item>
+              </b-nav-item-dropdown>
+            </b-navbar-nav>
+          </b-collapse>
+
+        </template><template v-else>
+          <b-collapse is-nav id="nav_collapse">
+            <b-navbar-nav class="ml-auto">
+              <b-navbar-nav>
+                <b-nav-item><router-link to="login" class="nav-link">Login</router-link></b-nav-item>
+                <b-nav-item><router-link to="signup" class="nav-link">Register</router-link></b-nav-item>
+              </b-navbar-nav>
+            </b-navbar-nav>
+          </b-collapse>
+        </template>
+      </b-navbar>
     </div>
   </div>
-</template> -->
-
+</template>
 
 <script>
 

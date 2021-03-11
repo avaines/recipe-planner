@@ -7,16 +7,16 @@ Vue.use(Router)
   {
     path: '/',
     name: 'home',
-    component: () => import('@/components/Home.vue'),
+    component: () => import('@/views/Home.vue'),
     meta: {
-      auth: true,
+      auth: false,
       title: 'Home'
     }
   },
   {
     path: '/login',
     name: 'login',
-    component: () => import('@/components/Login.vue'),
+    component: () => import('@/views/Login.vue'),
     meta: {
       auth: false,
       title: 'Login'
@@ -25,7 +25,7 @@ Vue.use(Router)
   {
     path: '/forgot-password',
     name: 'forgot-password',
-    component: () => import('@/components/ForgotPassword.vue'),
+    component: () => import('@/views/ForgotPassword.vue'),
     meta: {
       auth: false,
       title: 'Forgot Password'
@@ -34,7 +34,7 @@ Vue.use(Router)
   {
     path: '/signup',
     name: 'signup',
-    component: () => import('@/components/Signup.vue'),
+    component: () => import('@/views/Signup.vue'),
     meta: {
       auth: false,
       title: 'Signup'
@@ -43,10 +43,37 @@ Vue.use(Router)
   {
     path: '/profile',
     name: 'profile',
-    component: () => import('@/components/Profile.vue'),
+    component: () => import('@/views/Profile.vue'),
     meta: {
       auth: true,
       title: 'Profile'
+    }
+  },
+  {
+    name: 'create',
+    path: '/create',
+    component: () => import('@/views/RecipesCreate'),
+    meta: {
+      auth: true,
+      title: 'Create Recipes'
+    }
+  },
+  {
+    name: 'manageRecipes',
+    path: '/manage',
+    component: () => import('@/views/RecipesManage'),
+    meta: {
+      auth: true,
+      title: 'Manage Recipes'
+    }
+  },
+  {
+    name: 'edit',
+    path: '/edit/:id',
+    component: () => import('@/views/RecipesEdit'),
+    meta: {
+      auth: true,
+      title: 'Edit Recipes'
     }
   }
 ]

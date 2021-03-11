@@ -1,0 +1,12 @@
+Fontawesome
+  icon for user menu
+
+Functionality
+  Generate menu
+  Generate shopping list
+
+Future Functionality
+  persistent state for menu
+    what is on for this month is on for this month
+
+  multi users?
