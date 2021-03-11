@@ -1,12 +1,12 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { db } from '@/main'
+const firebase = require('@/plugins/firebase.js');
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    posts: [],
+    recipes: [],
     user: {
       loggedIn: false,
       data: null
@@ -16,8 +16,8 @@ export default new Vuex.Store({
     user(state){
       return state.user
     },
-    posts(state){
-      return state.posts
+    recipes(state){
+      return state.recipes
     }
   },
   mutations: {
@@ -27,8 +27,8 @@ export default new Vuex.Store({
     SET_USER(state, data) {
       state.user.data = data;
     },
-    setPosts: (state, posts) => {
-      state.posts = posts
+    setRecipes: (state, recipes) => {
+      state.recipes = recipes
     }
   },
   actions: {
@@ -43,15 +43,15 @@ export default new Vuex.Store({
         commit("SET_USER", null);
       }
     },
-    loadPosts: async context => {
-      let snapshot = await db.collection('posts').get()
-      const posts = []
+    loadRecipes: async context => {
+      let snapshot = await firebase.db.collection('recipes').get()
+      const recipes = []
       snapshot.forEach(doc => {
         let appData = doc.data()
         appData.id = doc.id
-        posts.push(appData)
+        recipes.push(appData)
       })
-      context.commit('setPosts', posts)
+      context.commit('setRecipes', recipes)
     }
   }
 });
