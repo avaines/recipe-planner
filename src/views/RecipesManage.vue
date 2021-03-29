@@ -53,7 +53,6 @@ export default {
       this.$store.dispatch('loadRecipes')
     },
     async deleteRecipe(id) {
-      console.log("Test")
       await firebase.db.collection('recipes').doc(id).delete()
       this.getRecipes()
     }

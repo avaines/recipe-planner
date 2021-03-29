@@ -9,10 +9,13 @@
   },
   "dependencies": {
     "@fortawesome/vue-fontawesome": "^2.0.2",
+    "@google-cloud/firestore": "^4.9.8",
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.9.1",
-    "firebase": "^8.2.9",
+    "csv-parse": "^4.15.3",
+    "firebase": "^8.3.0",
+    "firebase-admin": "^9.5.0",
     "vue": "^2.6.12",
     "vue-router": "^3.5.1",
     "vuex": "^3.6.2"
@@ -39,7 +42,10 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "no-console": 0,
+      "no-debugger": 0
+    }
   },
   "browserslist": [
     "> 1%",
