@@ -11,8 +11,12 @@ Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 
 // Include fontawesome
-// import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-// Vue.component('font-awesome-icon', FontAwesomeIcon)
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faToolbox } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faToolbox)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false;
 

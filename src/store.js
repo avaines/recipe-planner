@@ -1,7 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 const firebase = require('@/plugins/firebase.js');
-import rndHelpers from '@/helpers/random';
+import rndHelpers from '@/helpers/Random';
+import objHelpers from '@/helpers/ObjectLogic';
 
 Vue.use(Vuex);
 
@@ -42,9 +43,17 @@ export default new Vuex.Store({
     },
     setWeekRecipes: (state, {daysPerWeek, recipes}) => {
       state.weekRecipes.w1 = recipes.slice(0, daysPerWeek);
+      state.weekRecipes.w1.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w1)
+
       state.weekRecipes.w2 = recipes.slice(daysPerWeek, daysPerWeek*2);
+      state.weekRecipes.w2.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w2)
+
       state.weekRecipes.w3 = recipes.slice(daysPerWeek*2, daysPerWeek*3);
+      state.weekRecipes.w3.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w3)
+
       state.weekRecipes.w4 = recipes.slice(daysPerWeek*3, daysPerWeek*20);
+      state.weekRecipes.w4.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w4)
+
     }
   },
   actions: {
@@ -95,6 +104,8 @@ export default new Vuex.Store({
           let doc = snapshot.docs[i]
           let appData = doc.data()
           appData.id = doc.id
+
+          appData.ingredients = appData.ingredients.split(",").map(item => item.trim());
 
           recipes.push(appData)
         })

@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="col-md-12">
 
     <template v-if="user.loggedIn">
 
@@ -80,7 +80,7 @@
 
       </div>
     </div>
-    <hr>
+    <hr style="page-break-after: always;">
       <div class="row justify-content-center">
         <div class="col-md-10">
           <div class="card">
@@ -97,10 +97,18 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Week 1 ingredients</td>
-                    <td>Week 2 ingredients</td>
-                    <td>Week 3 ingredients</td>
-                    <td>Week 4 ingredients</td>
+                    <td>
+                      <li v-for="ingredient in weekRecipes.w1.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                    </td>
+                    <td>
+                      <li v-for="ingredient in weekRecipes.w2.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                    </td>
+                    <td>
+                      <li v-for="ingredient in weekRecipes.w3.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                    </td>
+                    <td>
+                      <li v-for="ingredient in weekRecipes.w4.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -121,7 +129,7 @@
         </div>
       </div>
     </template>
-  </div>
+    </div>
 </template>
 
 
