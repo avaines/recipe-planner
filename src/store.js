@@ -1,8 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 const firebase = require('@/plugins/firebase.js');
-import rndHelpers from '@/helpers/Random';
-import objHelpers from '@/helpers/ObjectLogic';
+import rndHelpers from '@/helpers/RandomFunctions';
+import objHelpers from '@/helpers/ObjectFunctions';
 
 Vue.use(Vuex);
 
