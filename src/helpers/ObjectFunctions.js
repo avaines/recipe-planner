@@ -19,7 +19,7 @@ export default {
         const ingredients = [];
         for (const [key, value] of Object.entries(ingredient_counts)) {
             ingredients.push(`${key} (${value})`)
-            console.log(`${key} (${value})`);
+            // console.log(`${key} (${value})`);
           }
 
         return ingredients.sort();
