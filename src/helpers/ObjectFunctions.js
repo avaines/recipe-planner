@@ -4,9 +4,9 @@ export default {
         // Create a list object of ingredients from the csv list
         l.forEach(function (item) {
             item.ingredients.forEach(function (listItem) {
-                // if (listItem != '' && !ingredients.includes(listItem) ) {
+                if (listItem != '') {
                     ingredients_raw.push(listItem);
-                // }
+                }
             });
         });
 
