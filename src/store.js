@@ -103,10 +103,11 @@ export default new Vuex.Store({
           appData.id = doc.id;
           recipes.push(appData);
         });
-
-        // Reuse recipes to reach the required number
-        while (recipes.length < requiredRecipes) {
-          recipes.push(...recipes.slice(0, requiredRecipes - recipes.length));
+        if (recipes.length != 0) {
+          // Reuse recipes to reach the required number
+          while (recipes.length < requiredRecipes) {
+            recipes.push(...recipes.slice(0, requiredRecipes - recipes.length));
+          }
         }
 
         context.commit('setWeekRecipes', { daysPerWeek, recipes });
