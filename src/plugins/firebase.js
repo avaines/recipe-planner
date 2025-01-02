@@ -13,17 +13,29 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
+const auth = firebase.auth()
 
 // date issue fix according to firebase
 const settings = {
     timestampsInSnapshots: true
 };
+
 db.settings(settings);
 
-firebase.auth().onAuthStateChanged(user => {
+// Optionally, configure Firebase to use local emulators during development
+if (process.env.NODE_ENV === 'development') {
+  // Point to the local Firestore emulator
+  db.useEmulator('localhost', 9086);
+
+  // Point to the local Firebase Auth emulator
+  auth.useEmulator('http://localhost:9099');
+}
+
+auth.onAuthStateChanged(user => {
   store.dispatch("fetchUser", user);
 });
 
 export {
-    db
+    db,
+    auth
 };

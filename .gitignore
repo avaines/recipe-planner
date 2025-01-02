@@ -1,7 +1,8 @@
 .DS_Store
 node_modules
-/dist
-/.firebase
+src/dist/
+.firebase
+firebase/firestore-backup/
 
 
 # local env files
@@ -23,3 +24,5 @@ pnpm-debug.log*
 *.sln
 *.sw?
 .env*
+firestore-debug.log
+firebase-debug.log
