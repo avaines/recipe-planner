@@ -41,19 +41,30 @@ export default new Vuex.Store({
     setRecipes: (state, recipes) => {
       state.recipes = recipes;
     },
-    setWeekRecipes: (state, {daysPerWeek, recipes}) => {
-      state.weekRecipes.w1 = recipes.slice(0, daysPerWeek);
-      state.weekRecipes.w1.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w1)
+    setWeekRecipes: (state, { daysPerWeek, recipes }) => {
+      const uniqueRecipes = recipes.map((recipe, index) => ({
+        ...recipe,
+        id: `${recipe.id}-${index}`
+      }));
 
-      state.weekRecipes.w2 = recipes.slice(daysPerWeek, daysPerWeek*2);
-      state.weekRecipes.w2.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w2)
+      const ensureArrayIngredients = recipes => recipes.map(recipe => ({
+        ...recipe,
+        ingredients: Array.isArray(recipe.ingredients) 
+          ? recipe.ingredients 
+          : recipe.ingredients.split(",").map(item => item.trim())
+      }));
 
-      state.weekRecipes.w3 = recipes.slice(daysPerWeek*2, daysPerWeek*3);
-      state.weekRecipes.w3.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w3)
+      state.weekRecipes.w1 = ensureArrayIngredients(uniqueRecipes.slice(0, daysPerWeek));
+      state.weekRecipes.w1.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w1);
 
-      state.weekRecipes.w4 = recipes.slice(daysPerWeek*3, daysPerWeek*20);
-      state.weekRecipes.w4.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w4)
+      state.weekRecipes.w2 = ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek, daysPerWeek * 2));
+      state.weekRecipes.w2.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w2);
 
+      state.weekRecipes.w3 = ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek * 2, daysPerWeek * 3));
+      state.weekRecipes.w3.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w3);
+
+      state.weekRecipes.w4 = ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek * 3, daysPerWeek * 4));
+      state.weekRecipes.w4.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w4);
     }
   },
   actions: {
@@ -79,38 +90,41 @@ export default new Vuex.Store({
       context.commit('setRecipes', recipes)
     },
     loadWeeksRecipes: async context => {
-      const requiredRecipes = 20 // This will eventually move to a variable when it becomes an option for the user, currently static at 20
-      const daysPerWeek = requiredRecipes/4
+      const requiredRecipes = 20; // This will eventually move to a variable when it becomes an option for the user, currently static at 20
+      const daysPerWeek = requiredRecipes / 4;
 
-      let snapshot = await firebase.db.collection('recipes').get()
-      // if length is more than requiredRecipes then ensure unique, else duplicates are fine
+      let snapshot = await firebase.db.collection('recipes').get();
+      const recipes = [];
 
-      const recipes = []
       if (snapshot.size <= requiredRecipes) {
-        // There are less than or equal to the number of recipes that are needed, so just return all of them
+        // There are less than or equal to the number of recipes that are needed, so reuse them to reach the required number
         snapshot.forEach(doc => {
-          let appData = doc.data()
-          appData.id = doc.id
-          recipes.push(appData)
-        })
-        context.commit('setWeekRecipes', requiredRecipes/4 ,recipes)
+          let appData = doc.data();
+          appData.id = doc.id;
+          recipes.push(appData);
+        });
 
+        // Reuse recipes to reach the required number
+        while (recipes.length < requiredRecipes) {
+          recipes.push(...recipes.slice(0, requiredRecipes - recipes.length));
+        }
+
+        context.commit('setWeekRecipes', { daysPerWeek, recipes });
       } else {
         // There are more recipes in the database that are needed, so get a list of unique numbers between 0 and the total number of records. then obtain those particular records only.
-        let indexes = rndHelpers.uniqueRandomNumbers(0, snapshot.size, requiredRecipes)
-        // console.log("numbers: ", indexes)
+        let indexes = rndHelpers.uniqueRandomNumbers(0, snapshot.size, requiredRecipes);
 
-        indexes.forEach(i=> {
-          let doc = snapshot.docs[i]
-          let appData = doc.data()
-          appData.id = doc.id
+        indexes.forEach(i => {
+          let doc = snapshot.docs[i];
+          let appData = doc.data();
+          appData.id = doc.id;
 
           appData.ingredients = appData.ingredients.split(",").map(item => item.trim());
 
-          recipes.push(appData)
-        })
+          recipes.push(appData);
+        });
 
-        context.commit('setWeekRecipes', {daysPerWeek, recipes})
+        context.commit('setWeekRecipes', { daysPerWeek, recipes });
       }
     }
   }
