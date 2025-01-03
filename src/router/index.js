@@ -52,10 +52,10 @@ Vue.use(Router)
   {
     name: 'create',
     path: '/create',
-    component: () => import('@/views/RecipesCreate'),
+    component: () => import('@/views/RecipesAdd'),
     meta: {
       auth: true,
-      title: 'Create Recipes'
+      title: 'Add Recipe'
     }
   },
   {

@@ -3,9 +3,8 @@
     <div class="row justify-content-center">
       <div class="col-md-8">
         <div class="card">
-          <div class="card-header">Create A Recipe</div>
+          <div class="card-header">Add A Recipe</div>
           <div class="card-body">
-            <!-- <div v-if="error" class="alert alert-danger">{{error}}</div> -->
             <form @submit.prevent="addRecipe">
               <div class="form-group row">
                 <label for="book" class="col-md-4 col-form-label text-md-right">Recipe Book</label>

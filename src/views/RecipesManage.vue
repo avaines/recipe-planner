@@ -57,8 +57,10 @@ export default {
       this.$store.dispatch('loadRecipes')
     },
     async deleteRecipe(id) {
-      await firebase.db.collection('recipes').doc(id).delete()
-      this.getRecipes()
+      if (confirm("Are you sure?") == true) {
+        await firebase.db.collection('recipes').doc(id).delete()
+        this.getRecipes()
+      }
     }
   },
   computed: {
