@@ -49,8 +49,8 @@ export default new Vuex.Store({
 
       const ensureArrayIngredients = recipes => recipes.map(recipe => ({
         ...recipe,
-        ingredients: Array.isArray(recipe.ingredients) 
-          ? recipe.ingredients 
+        ingredients: Array.isArray(recipe.ingredients)
+          ? recipe.ingredients
           : recipe.ingredients.split(",").map(item => item.trim())
       }));
 
