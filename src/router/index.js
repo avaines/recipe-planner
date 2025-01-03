@@ -50,8 +50,8 @@ Vue.use(Router)
     }
   },
   {
-    name: 'create',
-    path: '/create',
+    name: 'add',
+    path: '/add',
     component: () => import('@/views/RecipesAdd'),
     meta: {
       auth: true,
