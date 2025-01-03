@@ -23,8 +23,8 @@
 
               <b-nav-item-dropdown right>
                 <!-- Using button-content slot -->
-                <template slot="button-content"><em>User</em></template>
-                <b-dropdown-item ><router-link to="profile" class="nav-link">{{user.data.displayName}}</router-link></b-dropdown-item>
+                <template slot="button-content"><em><font-awesome-icon icon="bars"/></em></template>
+                <b-dropdown-item ><router-link to="profile" class="nav-link"><font-awesome-icon icon="user"/> {{user.data.displayName}}</router-link></b-dropdown-item>
                 <b-dropdown-item ><a class="nav-link" @click="signOut">Sign out</a></b-dropdown-item>
               </b-nav-item-dropdown>
             </b-navbar-nav>
