@@ -10,7 +10,7 @@
           <b-collapse is-nav id="nav_collapse">
             <b-navbar-nav>
               <b-nav-item href="/">Create Menu</b-nav-item>
-              <b-nav-item href="/create">Create Recipe</b-nav-item>
+              <b-nav-item href="/create">Add Recipe</b-nav-item>
               <b-nav-item href="/manage">Manage Recipes</b-nav-item>
             </b-navbar-nav>
 
