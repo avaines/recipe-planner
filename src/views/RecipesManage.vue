@@ -2,9 +2,13 @@
   <div class="container-fluid">
     <div class="row justify-content-center">
       <div class="col-md-10">
+        <br>
         <div class="card">
           <div class="card-header">Recipe List</div>
           <div class="card-body">
+            <div class="col-md-12">
+              <button class="btn btn-primary" onclick="location.href='/create'" type="button"> Add Recipe</button>
+            </div>
             <div class="col-md-12">
               <table class="table table-hover">
                 <thead>
