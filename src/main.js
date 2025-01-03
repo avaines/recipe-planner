@@ -4,18 +4,19 @@ import router from "./router";
 import store from "@/store";
 
 // Include bootstrap
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import { BootstrapVue } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
-Vue.use(IconsPlugin)
+// Vue.use(BootstrapVueIcons)
 
 // Include fontawesome
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faToolbox } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faToolbox, faBars, faUser, faPencilAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faToolbox)
+library.add(faToolbox, faBars, faUser, faPencilAlt, faTrashAlt);
+
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false;
