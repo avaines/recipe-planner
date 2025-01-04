@@ -1,12 +1,3 @@
----
-name: Pull Request
-about: Create a pull request to merge changes
-title: ''
-labels: ''
-assignees: ''
-
----
-
 **Description**
 <!-- A clear and concise description of what this pull request does. -->
 
