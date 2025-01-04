@@ -7,7 +7,7 @@
           <div class="card-header">Recipe List</div>
           <div class="card-body">
             <div class="row">
-              <div class="col-md-5">
+              <div class="col-md-4">
                   <button class="btn btn-primary" onclick="location.href='/add'" type="button">Add Recipe</button>
               </div>
               <div class="col-md-4">
@@ -60,10 +60,12 @@
 </template>
 
 <script>
+import { defineComponent } from 'vue';
+
 const firebase = require('@/plugins/firebase.js');
 import { mapGetters } from "vuex";
 
-export default {
+export default defineComponent({
   data() {
     return {
       filterText: '',
@@ -71,9 +73,11 @@ export default {
       sortOrderAsc: true
     }
   },
+
   mounted () {
     this.getRecipes()
   },
+
   methods: {
     getRecipes () {
       this.$store.dispatch('loadRecipes')
@@ -85,6 +89,7 @@ export default {
       }
     }
   },
+
   computed: {
     ...mapGetters({
       recipes: "recipes"
@@ -103,6 +108,6 @@ export default {
 
       return sortedRecipes;
     }
-  }
-};
+  },
+});
 </script>

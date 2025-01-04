@@ -6,50 +6,47 @@
           <div class="card-header">Add A Recipe</div>
           <div class="card-body">
             <form @submit.prevent="addRecipe">
-              <div class="form-group row">
-                <label for="book" class="col-md-4 col-form-label text-md-right">Recipe Book</label>
-
+              <div class="mb-3 row">
+                <label for="book" class="col-md-4 col-form-label text-md-end">Recipe Book</label>
                 <div class="col-md-6">
                   <input id="book" type="text" class="form-control" name="book" required autofocus v-model="book" />
                 </div>
               </div>
 
-              <div class="form-group row">
-                <label for="recipe" class="col-md-4 col-form-label text-md-right">Recipe</label>
-
+              <div class="mb-3 row">
+                <label for="recipe" class="col-md-4 col-form-label text-md-end">Recipe</label>
                 <div class="col-md-6">
                   <input id="recipe" type="text" class="form-control" name="recipe" required v-model="recipe" />
                 </div>
               </div>
 
-              <div class="form-group row">
-                <label for="lunch" class="col-md-4 col-form-label text-md-right">Lunch?</label>
-
+              <div class="mb-3 row">
+                <label for="lunch" class="col-md-4 col-form-label text-md-end">Lunch?</label>
                 <div class="col-md-1">
-                  <input id="lunch" type="checkbox" class="form-control" name="lunch" v-model="lunch" />
+                  <input id="lunch" type="checkbox" class="form-check-input" name="lunch" v-model="lunch" />
                 </div>
               </div>
-                  <div class="form-group row">
-                    <label for="ingredientsInput" class="col-md-4 col-form-label text-md-right">Add Ingredient:</label>
-                    <div class="col-md-6">
-                      <input type="text" class="form-control" @keydown.enter.prevent="addItem" v-model="newItem" ref="ingredientsInput" id="ingredientsInput">
-                    </div>
-                    <div class="col-sm-2">
-                      <button type="button" @click="addItem" class="btn btn-success">Add</button>
-                    </div>
-                  </div>
 
-                  <div v-for="(item, index) in ingredients" :key="index" class="form-group row">
-                    <label class="col-md-4 col-form-label text-md-right">{{ item }}</label>
-                    <div class="col-md-6 row">
-                      <div class="col-md-2">
-                        <button type="button" @click="editItem(index)" class="btn btn-primary">Edit</button>
-                      </div>
-                      <div class="col-md-2">
-                        <button type="button" @click="deleteItem(index)" class="btn btn-danger">Delete</button>
-                      </div>
-                    </div>
+              <div class="mb-3 row">
+                <label for="ingredientsInput" class="col-md-4 col-form-label text-md-end">Add Ingredient:</label>
+                <div class="col-md-6">
+                  <input type="text" class="form-control" @keydown.enter.prevent="addItem" v-model="newItem"
+                    ref="ingredientsInput" id="ingredientsInput">
+                </div>
+                <div class="col-sm-2">
+                  <button type="button" @click="addItem" class="btn btn-success">Add</button>
+                </div>
+              </div>
+
+              <div class="mb-3 row">
+                <div class="col-md-6 offset-md-4">
+                  <div v-for="(item, index) in ingredients" :key="index" class="d-flex align-items-center mb-2">
+                    <span class="me-auto">{{ item }}</span>
+                    <button type="button" @click="editItem(index)" class="btn btn-primary btn-sm me-2">Edit</button>
+                    <button type="button" @click="deleteItem(index)" class="btn btn-danger btn-sm">Delete</button>
                   </div>
+                </div>
+              </div>
 
               <div class="form-group row mb-0">
                 <div class="col-md-8 offset-md-4">

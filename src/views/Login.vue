@@ -21,7 +21,7 @@
           <div class="card-body">
             <div v-if="error" class="alert alert-danger">{{error}}</div>
             <form action="#" @submit.prevent="userLogin">
-              <div class="form-group row">
+              <div class="mb-3 row">
                 <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
 
                 <div class="col-md-6">
@@ -38,7 +38,7 @@
                 </div>
               </div>
 
-              <div class="form-group row">
+              <div class="mb-3 row">
                 <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
 
                 <div class="col-md-6">
@@ -71,9 +71,10 @@
 
 
 <script>
+import { defineComponent } from 'vue';
 import firebase from "firebase";
 
-export default {
+export default defineComponent({
   data() {
     return {
       user: {
@@ -83,6 +84,7 @@ export default {
       error: '',
     };
   },
+
   methods: {
     signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider()
@@ -111,6 +113,6 @@ export default {
         alert(error.message);
       });
     }
-  }
-};
+  },
+});
 </script>

@@ -7,12 +7,13 @@
   </div>
 </template>
 <script>
+import { defineComponent } from 'vue';
 
 import navbar from "@/components/Navbar";
 
-export default {
+export default defineComponent({
   components: {
     navbar
-  }
-};
+  },
+});
 </script>

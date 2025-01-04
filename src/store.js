@@ -1,12 +1,9 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import { createStore } from "vuex";
 const firebase = require('@/plugins/firebase.js');
 import rndHelpers from '@/helpers/RandomFunctions';
 import objHelpers from '@/helpers/ObjectFunctions';
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
+const store = createStore({
   state: {
     recipes: [],
     weekRecipes:{
@@ -130,3 +127,5 @@ export default new Vuex.Store({
     }
   }
 });
+
+export default store;
