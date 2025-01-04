@@ -1,70 +1,81 @@
 <template>
   <div id="app">
     <div class="shadow">
-      <b-navbar toggleable="lg" type="light">
-        <b-navbar-brand href="#"><router-link to="/" class="navbar-brand">Recipe Planner</router-link></b-navbar-brand>
-        <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <router-link to="/" class="navbar-brand">Recipe Planner</router-link>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav_collapse" aria-controls="nav_collapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <template v-if="user.loggedIn">
+        <div class="collapse navbar-collapse" id="nav_collapse">
+          <template v-if="user.loggedIn">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                <router-link to="/" class="nav-link">Create Menu</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="/add" class="nav-link">Add Recipe</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="/manage" class="nav-link">Manage Recipes</router-link>
+              </li>
+            </ul>
 
-          <b-collapse is-nav id="nav_collapse">
-            <b-navbar-nav>
-              <b-nav-item href="/">Create Menu</b-nav-item>
-              <b-nav-item href="/add">Add Recipe</b-nav-item>
-              <b-nav-item href="/manage">Manage Recipes</b-nav-item>
-            </b-navbar-nav>
-
-            <!-- Right aligned nav items -->
-            <b-navbar-nav class="ml-auto">
-                <!-- <b-nav-form>
-                    <b-form-input size="sm" class="mr-sm-2" type="text" placeholder="Search"></b-form-input>
-                    <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
-                </b-nav-form> -->
-
-              <b-nav-item-dropdown right>
-                <!-- Using button-content slot -->
-                <template slot="button-content"><em><font-awesome-icon icon="bars"/></em></template>
-                <b-dropdown-item ><router-link to="profile" class="nav-link"><font-awesome-icon icon="user"/> {{user.data.displayName}}</router-link></b-dropdown-item>
-                <b-dropdown-item ><a class="nav-link" @click="signOut">Sign out</a></b-dropdown-item>
-              </b-nav-item-dropdown>
-            </b-navbar-nav>
-          </b-collapse>
-
-        </template><template v-else>
-          <b-collapse is-nav id="nav_collapse">
-            <b-navbar-nav class="ml-auto">
-              <b-navbar-nav>
-                <b-nav-item><router-link to="login" class="nav-link">Login</router-link></b-nav-item>
-                <b-nav-item><router-link to="signup" class="nav-link">Register</router-link></b-nav-item>
-              </b-navbar-nav>
-            </b-navbar-nav>
-          </b-collapse>
-        </template>
-      </b-navbar>
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <em><font-awesome-icon icon="bars"/></em>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                  <li>
+                    <router-link to="profile" class="dropdown-item"><font-awesome-icon icon="user"/> {{user.data.displayName}}</router-link>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" @click="signOut">Sign out</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </template>
+          <template v-else>
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <router-link to="login" class="nav-link">Login</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="signup" class="nav-link">Register</router-link>
+              </li>
+            </ul>
+          </template>
+        </div>
+      </nav>
     </div>
   </div>
 </template>
 
 <script>
+import { defineComponent, computed } from 'vue';
+import { useStore } from 'vuex';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 
-import { mapGetters } from "vuex";
-import firebase from "firebase";
+export default defineComponent({
+  setup() {
+    const store = useStore();
+    const user = computed(() => store.getters.user);
 
-export default {
-  computed: {
-    ...mapGetters({
-      // map `this.user` to `this.$store.getters.user`
-      user: "user"
-    })
-  },
-  methods: {
-    signOut() {
+    const signOut = () => {
       firebase.auth().signOut().then(() => {
         firebase.auth().onAuthStateChanged(() => {
-          this.$router.push('/login')
-        })
-      })
-    }
+          this.$router.push('/login');
+        });
+      });
+    };
+
+    return {
+      user,
+      signOut
+    };
   }
-};
+});
 </script>

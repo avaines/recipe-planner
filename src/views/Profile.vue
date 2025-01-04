@@ -34,15 +34,16 @@
 </template>
 
 <script>
-
+import { defineComponent } from 'vue';
 import firebase from "firebase";
 
-export default {
+export default defineComponent({
   data() {
     return {
       user: null
     };
   },
+
   created() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -52,6 +53,7 @@ export default {
       }
     });
   },
+
   methods: {
     signOut() {
       firebase.auth().signOut().then(() => {
@@ -60,6 +62,6 @@ export default {
         })
       })
     }
-  }
-};
+  },
+});
 </script>

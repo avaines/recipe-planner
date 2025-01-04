@@ -10,17 +10,15 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@fortawesome/vue-fontawesome": "^2.0.10",
-    "@google-cloud/firestore": "^4.9.8",
-    "bootstrap": "^4.6.0",
-    "bootstrap-vue": "^2.21.2",
+    "@fortawesome/vue-fontawesome": "^3.0.0-3",
+    "bootstrap": "^5.3.3",
     "core-js": "^3.9.1",
     "csv-parse": "^4.15.3",
     "firebase": "^8.3.0",
     "firebase-admin": "^9.5.0",
-    "vue": "^2.6.12",
-    "vue-router": "^3.5.1",
-    "vuex": "^3.6.2"
+    "vue": "^3.5.13",
+    "vue-router": "^4.0.0",
+    "vuex": "^4.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.11",
@@ -28,7 +26,7 @@
     "@vue/cli-service": "^4.5.11",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-vue": "^6.2.2",
+    "eslint-plugin-vue": "^7.0.0",
     "vue-cli-plugin-element": "~1.0.1",
     "vue-template-compiler": "^2.6.12"
   },
@@ -38,7 +36,7 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
+      "plugin:vue/vue3-essential",
       "eslint:recommended"
     ],
     "parserOptions": {

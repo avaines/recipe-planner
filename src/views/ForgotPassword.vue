@@ -8,31 +8,30 @@
           <div class="card-body">
 
             <form @submit.prevent="forgetPassword">
-              <div class="form-group row">
-                <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
+              <div class="row mb-3">
+                <label for="email" class="col-md-4 col-form-label text-md-end">Email</label>
 
-                  <div class="col-md-6">
-                    <input
-                      id="email"
-                      type="email"
-                      class="form-control"
-                      name="email"
-                      value
-                      required
-                      autofocus
-                      v-model="user.email"
-                    />
-                  </div>
+                <div class="col-md-6">
+                  <input
+                    id="email"
+                    type="email"
+                    class="form-control"
+                    name="email"
+                    required
+                    autofocus
+                    v-model="user.email"
+                  />
+                </div>
               </div>
-              <div class="form-group row mb-0">
+              <div class="row mb-0">
                 <div class="col-md-8 offset-md-4">
                   <button type="submit" class="btn btn-primary">Reset password</button>
                 </div>
               </div>
             </form>
-            <p class="text-right">
-                <router-link :to="{name: 'forgot-password'}">Forgot Password?</router-link>
-              </p>
+            <p class="text-end">
+              <router-link :to="{name: 'forgot-password'}">Forgot Password?</router-link>
+            </p>
           </div>
         </div>
       </div>
@@ -41,9 +40,11 @@
 </template>
 
 <script>
+
+import { defineComponent } from 'vue';
 import firebase from "firebase";
 
-export default {
+export default defineComponent({
   data() {
     return {
       user: {
@@ -51,6 +52,7 @@ export default {
       }
     };
   },
+
   methods: {
     forgetPassword() {
         firebase
@@ -65,6 +67,6 @@ export default {
           alert(error)
         })
     }
-  }
-};
+  },
+});
 </script>

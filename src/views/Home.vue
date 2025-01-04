@@ -97,16 +97,24 @@
                 <tbody>
                   <tr>
                     <td>
-                      <li v-for="ingredient in weekRecipes.w1.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                      <ul class="list-unstyled">
+                        <li v-for="ingredient in weekRecipes.w1.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                      </ul>
                     </td>
                     <td>
-                      <li v-for="ingredient in weekRecipes.w2.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                      <ul class="list-unstyled">
+                        <li v-for="ingredient in weekRecipes.w2.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                      </ul>
                     </td>
                     <td>
-                      <li v-for="ingredient in weekRecipes.w3.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                      <ul class="list-unstyled">
+                        <li v-for="ingredient in weekRecipes.w3.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                      </ul>
                     </td>
                     <td>
-                      <li v-for="ingredient in weekRecipes.w4.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                      <ul class="list-unstyled">
+                        <li v-for="ingredient in weekRecipes.w4.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                      </ul>
                     </td>
                   </tr>
                 </tbody>
@@ -133,29 +141,34 @@
 
 
 <script>
+import { defineComponent } from 'vue';
 import { mapGetters } from "vuex";
 import HomeTableElement from "@/components/HomeTableElement.vue";
 
-export default {
+export default defineComponent({
   data() {
     return {}
   },
+
   mounted () {
     this.getRecipes()
   },
+
   methods: {
     getRecipes () {
       this.$store.dispatch('loadWeeksRecipes');
     }
   },
+
   components: {
     HomeTableElement
   },
+
   computed: {
     ...mapGetters({
       user: "user",
       weekRecipes: "weekRecipes"
     })
-  }
-};
+  },
+});
 </script>

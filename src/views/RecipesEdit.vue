@@ -3,12 +3,11 @@
     <div class="row justify-content-center">
       <div class="col-md-8">
         <div class="card">
-          <div class="card-header">HEADER</div>
+          <div class="card-header">Edit Recipe</div>
           <div class="card-body">
-<!-- <div v-if="error" class="alert alert-danger">{{error}}</div> -->
             <form @submit.prevent="updateRecipe">
-              <div class="form-group row">
-                <label for="book" class="col-md-4 col-form-label text-md-right">Recipe Book</label>
+              <div class="mb-3 row">
+                <label for="book" class="col-md-4 col-form-label text-md-end">Recipe Book</label>
 
                 <div class="col-md-6">
                   <input
@@ -23,8 +22,8 @@
                 </div>
               </div>
 
-              <div class="form-group row">
-                <label for="recipe" class="col-md-4 col-form-label text-md-right">Recipe</label>
+              <div class="mb-3 row">
+                <label for="recipe" class="col-md-4 col-form-label text-md-end">Recipe</label>
 
                 <div class="col-md-6">
                   <input
@@ -38,22 +37,22 @@
                 </div>
               </div>
 
-              <div class="form-group row">
-                <label for="lunch" class="col-md-4 col-form-label text-md-right">Lunch?</label>
+              <div class="mb-3 row">
+                <label for="lunch" class="col-md-4 col-form-label text-md-end">Lunch?</label>
 
                 <div class="col-md-1">
                   <input
                     id="lunch"
                     type="checkbox"
-                    class="form-control"
+                    class="form-check-input"
                     name="lunch"
                     v-model="recipe.lunch"
                   />
                 </div>
               </div>
 
-              <div class="form-group row">
-                <label for="ingredients" class="col-md-4 col-form-label text-md-right">Ingredients</label>
+              <div class="mb-3 row">
+                <label for="ingredients" class="col-md-4 col-form-label text-md-end">Ingredients</label>
 
                 <div class="col-md-6">
                   <textarea
@@ -69,9 +68,9 @@
                 </div>
               </div>
 
-              <div class="form-group row mb-0">
+              <div class="row mb-0">
                 <div class="col-md-8 offset-md-4">
-                  <button type="submit" class="btn btn-primary">Update</button>
+                  <button type="submit" class="btn btn-primary">Update Recipe</button>
                 </div>
               </div>
 
