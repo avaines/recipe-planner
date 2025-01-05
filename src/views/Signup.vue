@@ -65,7 +65,7 @@
               </form>
               <p class="forgot-password text-right">
                 Already registered
-                <router-link :to="{name: 'login'}">sign in?</router-link>
+                <router-link :to="{name: 'Login'}">sign in?</router-link>
               </p>
             </div>
           </div>
@@ -78,8 +78,8 @@
 
 <script>
 import { defineComponent } from 'vue';
-
 import firebase from "firebase";
+import { v4 as uuidv4 } from 'uuid';
 
 export default defineComponent({
   data() {
@@ -104,7 +104,20 @@ export default defineComponent({
             displayName: this.user.name
           })
           .then(() => {
-            this.$router.push('/login')
+            const userId = res.user.uid;
+            const groupId = uuidv4();
+            firebase.firestore().collection('allow-users').doc(userId).set({
+              displayName: res.user.name,
+              email: res.user.email,
+              enabled: false,
+              groupId: groupId
+            })
+            .then(() => {
+              this.$router.push({ name: 'Login' });
+            })
+            .catch((error) => {
+              alert(error.message);
+            });
           });
       })
       .catch((error) => {

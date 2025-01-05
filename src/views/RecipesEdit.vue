@@ -110,7 +110,7 @@ export default {
         lunch: this.recipe.lunch,
         ingredients: this.recipe.ingredients,
       })
-      this.$router.push({name: 'manageRecipes'});
+      this.$router.push({ name: 'ManageRecipes' });
     }
   }
 }

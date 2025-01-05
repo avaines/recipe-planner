@@ -14,10 +14,10 @@
                 <router-link to="/" class="nav-link">Create Menu</router-link>
               </li>
               <li class="nav-item">
-                <router-link to="/add" class="nav-link">Add Recipe</router-link>
+                <router-link to="/addRecipe" class="nav-link">Add Recipe</router-link>
               </li>
               <li class="nav-item">
-                <router-link to="/manage" class="nav-link">Manage Recipes</router-link>
+                <router-link to="/manageRecipes" class="nav-link">Manage Recipes</router-link>
               </li>
             </ul>
 
@@ -28,7 +28,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                   <li>
-                    <router-link to="profile" class="dropdown-item"><font-awesome-icon icon="user"/> {{user.data.displayName}}</router-link>
+                    <router-link to="Profile" class="dropdown-item"><font-awesome-icon icon="user"/> {{user.data.displayName}}</router-link>
                   </li>
                   <li>
                     <a class="dropdown-item" @click="signOut">Sign out</a>
@@ -40,10 +40,10 @@
           <template v-else>
             <ul class="navbar-nav ms-auto">
               <li class="nav-item">
-                <router-link to="login" class="nav-link">Login</router-link>
+                <router-link to="Login" class="nav-link">Login</router-link>
               </li>
               <li class="nav-item">
-                <router-link to="signup" class="nav-link">Register</router-link>
+                <router-link to="Signup" class="nav-link">Register</router-link>
               </li>
             </ul>
           </template>
@@ -65,9 +65,9 @@ export default defineComponent({
     const user = computed(() => store.getters.user);
 
     const signOut = () => {
-      firebase.auth().signOut().then(() => {
-        firebase.auth().onAuthStateChanged(() => {
-          this.$router.push('/login');
+      firebase.auth.signOut().then(() => {
+        firebase.auth.onAuthStateChanged(() => {
+          this.$router.push({ name: 'Login' });
         });
       });
     };

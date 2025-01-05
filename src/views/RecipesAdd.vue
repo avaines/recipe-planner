@@ -77,15 +77,27 @@ export default {
   },
   methods: {
     async addRecipe() {
+      const user = firebase.auth.currentUser;
+      if (!user) {
+        return;
+      }
+
+      const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
+      if (!doc.exists) {
+        return;
+      }
+
+      const groupId = doc.data().groupId;
+      const collectionName = `recipes-${groupId}`;
       const joinedIngredients = this.ingredients.join(', ');
 
-      await firebase.db.collection('recipes').add({
+      await firebase.db.collection(collectionName).add({
         book: this.book,
         recipe: this.recipe,
         lunch: this.lunch,
         ingredients: joinedIngredients
       })
-      this.$router.push({ name: 'manageRecipes' });
+      this.$router.push({ name: 'ManageRecipes' });
     },
     toSentenceCase(str) {
       return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

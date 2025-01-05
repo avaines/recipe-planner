@@ -30,7 +30,7 @@
               </div>
             </form>
             <p class="text-end">
-              <router-link :to="{name: 'forgot-password'}">Forgot Password?</router-link>
+              <router-link :to="{name: 'ForgotPassword'}">Forgot Password?</router-link>
             </p>
           </div>
         </div>
