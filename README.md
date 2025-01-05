@@ -96,12 +96,6 @@ Once everything is set up, run the following command to start the local developm
 npm run serve
 ```
 
-or if you are using `yarn`:
-
-```bash
-yarn serve
-```
-
 This will start the Vue.js app locally at `http://localhost:8080`.
 
 ### 5. Build for Production
@@ -175,9 +169,11 @@ Stores the IDs of valid users, its very lazy but works sufficiently to gatekeep 
 
 | Document | Fields |
 | -------- | ------- |
-| *Firebase Authentication Identifier*  | note: 'my user' |
+| *Firebase Authentication Identifier*  | displayName: 'my user',<br>email:'myuser@domain.com',<br>enabled:true,<br>,groupId:'{uuid}' |
 
-### Collection: 'recipies'
+### Collection: 'recipies-${groupId}'
+The groupID is a UUID assigned to each user at registration
+to support sharing/collaboration a user can change their groupId to match someone elses when shared allowing two or more to share the same set of recipies in the collection
 Stores the recipe data
 
 | Document | Fields |
@@ -207,25 +203,13 @@ Then store it in your GitHub repository secrets for automated deployment.
 
 ## Contributing
 
-We welcome contributions! To contribute to the project:
-
-1. Fork the repository and create your branch.
-2. Make your changes and test locally.
-3. Submit a pull request with a detailed description of your changes.
+See the [CONTRIBUTING.md](CONTRIBUTING) file for details.
 
 ---
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## Acknowledgements
-
-- [Vue.js](https://vuejs.org) – JavaScript framework used for the front end.
-- [Firebase](https://firebase.google.com) – Platform for backend services (Firestore, Hosting, Authentication).
-- [GitHub Actions](https://github.com/features/actions) – For CI/CD automation.
 
 ---
 
