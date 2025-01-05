@@ -45,8 +45,8 @@
                     <td>{{ recipe.lunch }}</td>
                     <td>{{ recipe.ingredients }}</td>
                     <td class="col-md-2">
-                      <router-link :to="{name: 'Edit', params: { id: recipe.id }}" class="btn btn-primary mr-2"><font-awesome-icon icon="pencil-alt"/></router-link>
-                      <button class="btn btn-danger" @click.prevent="deleteRecipe(recipe.id)"><font-awesome-icon icon="trash-alt"/></button>
+                      <router-link :to="{name: 'Edit', params: { id: recipe.id }}" class="btn btn-primary mr-2"><i class="bi bi-pencil"></i></router-link>
+                      <button class="btn btn-danger" @click.prevent="deleteRecipe(recipe.id)"><i class="bi bi-trash"></i></button>
                     </td>
                   </tr>
                 </tbody>

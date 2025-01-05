@@ -24,11 +24,11 @@
             <ul class="navbar-nav ms-auto">
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <em><font-awesome-icon icon="bars"/></em>
+                  <i class="bi bi-list"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                   <li>
-                    <router-link to="Profile" class="dropdown-item"><font-awesome-icon icon="user"/> {{user.data.displayName}}</router-link>
+                    <router-link to="Profile" class="dropdown-item"><i class="bi bi-person"></i> {{user.data.displayName}}</router-link>
                   </li>
                   <li>
                     <a class="dropdown-item" @click="signOut">Sign out</a>
