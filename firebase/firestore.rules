@@ -1,19 +1,31 @@
 rules_version = '2';
 service cloud.firestore {
-  match /databases/{database}/documents/recipes {
-    match /{document=**} {
-      allow read: if isSignedIn();
+  match /databases/{database}/documents {
+    match /allow-users/{userId} {
+      allow read, write: if request.auth.uid == userId;
     }
-    match /{document=**} {
-      allow write, delete: if isSignedIn() && isAllowedUser();
-    }
-    
+
     function isSignedIn() {
       return request.auth.uid != null;
     }
 
     function isAllowedUser() {
-      return exists(/databases/$(database)/documents/allow-users/$(request.auth.uid));
+      let userDoc = get(/databases/$(database)/documents/allow-users/$(request.auth.uid));
+      return userDoc != null && userDoc.data.enabled == true;
+    }
+
+    function getGroupId() {
+      let userDoc = get(/databases/$(database)/documents/allow-users/$(request.auth.uid));
+      return userDoc != null ? userDoc.data.groupId : null;
+    }
+
+    match /{document=**} {
+      allow list: if isSignedIn() && getGroupId() != null;
+      allow read: if isSignedIn() && getGroupId() != null;
+    }
+
+    match /{recipesGroupId}/{document=**} {
+      allow create, write, delete: if isSignedIn() && isAllowedUser() && ("recipes-" + getGroupId()) == recipesGroupId
     }
   }
 }

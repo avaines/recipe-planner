@@ -1,7 +1,6 @@
 import { createStore } from "vuex";
 const firebase = require('@/plugins/firebase.js');
 import rndHelpers from '@/helpers/RandomFunctions';
-import objHelpers from '@/helpers/ObjectFunctions';
 
 const store = createStore({
   state: {
@@ -15,7 +14,8 @@ const store = createStore({
     user: {
       loggedIn: false,
       data: null
-    }
+    },
+    isLoggedIn: false,
   },
   getters: {
     user(state){
@@ -31,6 +31,7 @@ const store = createStore({
   mutations: {
     SET_LOGGED_IN(state, value) {
       state.user.loggedIn = value;
+      state.isLoggedIn = value;
     },
     SET_USER(state, data) {
       state.user.data = data;
@@ -51,17 +52,12 @@ const store = createStore({
           : recipe.ingredients.split(",").map(item => item.trim())
       }));
 
-      state.weekRecipes.w1 = ensureArrayIngredients(uniqueRecipes.slice(0, daysPerWeek));
-      state.weekRecipes.w1.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w1);
-
-      state.weekRecipes.w2 = ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek, daysPerWeek * 2));
-      state.weekRecipes.w2.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w2);
-
-      state.weekRecipes.w3 = ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek * 2, daysPerWeek * 3));
-      state.weekRecipes.w3.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w3);
-
-      state.weekRecipes.w4 = ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek * 3, daysPerWeek * 4));
-      state.weekRecipes.w4.shoppinglist = objHelpers.getUniqueIngredients(state.weekRecipes.w4);
+      state.weekRecipes = {
+        w1: ensureArrayIngredients(uniqueRecipes.slice(0, daysPerWeek)),
+        w2: ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek, daysPerWeek * 2)),
+        w3: ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek * 2, daysPerWeek * 3)),
+        w4: ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek * 3, daysPerWeek * 4))
+      };
     }
   },
   actions: {
@@ -77,20 +73,44 @@ const store = createStore({
       }
     },
     loadRecipes: async context => {
-      let snapshot = await firebase.db.collection('recipes').get()
-      const recipes = []
+      const user = firebase.auth.currentUser;
+      if (!user) {
+        return;
+      }
+
+      const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
+      if (!doc.exists) {
+        return;
+      }
+
+      const groupId = doc.data().groupId;
+      const collectionName = `recipes-${groupId}`;
+      let snapshot = await firebase.db.collection(collectionName).get();
+      const recipes = [];
       snapshot.forEach(doc => {
-        let appData = doc.data()
-        appData.id = doc.id
-        recipes.push(appData)
-      })
-      context.commit('setRecipes', recipes)
+        let appData = doc.data();
+        appData.id = doc.id;
+        recipes.push(appData);
+      });
+      context.commit('setRecipes', recipes);
     },
     loadWeeksRecipes: async context => {
+      const user = firebase.auth.currentUser;
+      if (!user) {
+        return;
+      }
+
+      const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
+      if (!doc.exists) {
+        return;
+      }
+
+      const groupId = doc.data().groupId;
+      const collectionName = `recipes-${groupId}`;
       const requiredRecipes = 20; // This will eventually move to a variable when it becomes an option for the user, currently static at 20
       const daysPerWeek = requiredRecipes / 4;
 
-      let snapshot = await firebase.db.collection('recipes').get();
+      let snapshot = await firebase.db.collection(collectionName).get();
       const recipes = [];
 
       if (snapshot.size <= requiredRecipes) {
@@ -123,6 +143,31 @@ const store = createStore({
         });
 
         context.commit('setWeekRecipes', { daysPerWeek, recipes });
+      }
+    },
+    async checkUserAuthentication({ commit }) {
+      const user = firebase.auth.currentUser;
+      if (user) {
+        try {
+          const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
+          if (doc.exists && doc.data().enabled) {
+            commit('SET_LOGGED_IN', true);
+            commit('SET_USER', user);
+          } else {
+            alert('Your account is not enabled. Please contact support.');
+            await firebase.auth.signOut();
+            commit('SET_LOGGED_IN', false);
+            commit('SET_USER', null);
+          }
+        } catch (error) {
+          console.error("Error checking user enabled status: ", error);
+          await firebase.auth.signOut();
+          commit('SET_LOGGED_IN', false);
+          commit('SET_USER', null);
+        }
+      } else {
+        commit('SET_LOGGED_IN', false);
+        commit('SET_USER', null);
       }
     }
   }

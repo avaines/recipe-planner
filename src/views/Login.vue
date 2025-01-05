@@ -60,7 +60,7 @@
               </div>
             </form>
             <p class="text-right">
-                <router-link :to="{name: 'forgot-password'}">Forgot Password?</router-link>
+                <router-link :to="{name: 'ForgotPassword'}">Forgot Password?</router-link>
               </p>
           </div>
         </div>
@@ -73,6 +73,7 @@
 <script>
 import { defineComponent } from 'vue';
 import firebase from "firebase";
+import { v4 as uuidv4 } from 'uuid';
 
 export default defineComponent({
   data() {
@@ -87,18 +88,48 @@ export default defineComponent({
 
   methods: {
     signInWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider()
+      const provider = new firebase.auth.GoogleAuthProvider();
 
       firebase
-      .auth()
-      .signInWithPopup(provider)
-      .then(() => {
-        this.$store.commit('SET_LOGGED_IN', true)
-        this.$router.push('/')
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
+        .auth()
+        .signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          const userId = user.uid;
+          const groupId = uuidv4();
+
+          firebase.firestore().collection('allow-users').doc(userId).get()
+            .then((doc) => {
+              if (!doc.exists) {
+                firebase.firestore().collection('allow-users').doc(userId).set({
+                  displayName: user.displayName,
+                  email: user.email,
+                  enabled: false,
+                  groupId: groupId
+                })
+                .then(() => {
+                  console.log('User added to allow-users collection');
+                  this.$store.commit('SET_LOGGED_IN', true);
+                  this.$router.push('/');
+                })
+                .catch((error) => {
+                  console.error('Error adding user to allow-users collection:', error);
+                  alert(error.message);
+                });
+              } else {
+                this.$store.commit('SET_LOGGED_IN', true);
+                this.$router.push('/');
+              }
+            })
+            .catch((error) => {
+              console.error('Error checking allow-users collection:', error);
+              alert(error.message);
+            });
+        })
+        .catch((error) => {
+          console.error('Error signing in with Google:', error);
+          alert(error.message);
+        });
     },
 
     userLogin() {

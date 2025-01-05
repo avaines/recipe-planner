@@ -130,7 +130,7 @@
           <div class="card">
             <div class="card-header">Home</div>
             <div class="card-body">
-                <router-link to="login" class="nav-link">You are not logged in</router-link>
+                <router-link to="Login" class="nav-link">You are not logged in</router-link>
             </div>
           </div>
         </div>

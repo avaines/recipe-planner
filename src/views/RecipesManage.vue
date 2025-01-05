@@ -8,7 +8,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col-md-4">
-                  <button class="btn btn-primary" onclick="location.href='/add'" type="button">Add Recipe</button>
+                <router-link :to="{name: 'AddRecipe'}" class="btn btn-primary" type="button">Add Recipe</router-link>
               </div>
               <div class="col-md-4">
                 <input type="text" v-model="filterText" placeholder="Filter by recipe name" class="form-control mb-2" />
@@ -45,7 +45,7 @@
                     <td>{{ recipe.lunch }}</td>
                     <td>{{ recipe.ingredients }}</td>
                     <td class="col-md-2">
-                      <router-link :to="{name: 'edit', params: { id: recipe.id }}" class="btn btn-primary mr-2"><font-awesome-icon icon="pencil-alt"/></router-link>
+                      <router-link :to="{name: 'Edit', params: { id: recipe.id }}" class="btn btn-primary mr-2"><font-awesome-icon icon="pencil-alt"/></router-link>
                       <button class="btn btn-danger" @click.prevent="deleteRecipe(recipe.id)"><font-awesome-icon icon="trash-alt"/></button>
                     </td>
                   </tr>
