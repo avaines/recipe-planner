@@ -5,8 +5,8 @@
         <b>{{ book }}</b>
       </div>
       <div class="col-2 justify-content-right">
-        <span v-if="lunch == 'Yes'">
-          <font-awesome-icon icon="toolbox" />
+        <span v-if="lunch == true">
+          <i class="bi bi-box2-heart"></i>
         </span>
       </div>
     </div>
@@ -22,9 +22,7 @@
 <script>
 module.exports = {
   data: function() {
-    return {
-      // nothing
-    }
+    return {}
   },
   props: ['book', 'lunch', 'recipe'],
 };

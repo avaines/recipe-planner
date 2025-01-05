@@ -1,19 +1,22 @@
 <template>
   <div>
-    <navbar></navbar>
+    <Navbar></Navbar>
     <main class="py-4">
       <router-view></router-view>
     </main>
+    <Footer></Footer>
   </div>
 </template>
+
 <script>
 import { defineComponent } from 'vue';
-
-import navbar from "@/components/Navbar";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default defineComponent({
   components: {
-    navbar
+    Navbar,
+    Footer
   },
 });
 </script>
