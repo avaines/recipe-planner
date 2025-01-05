@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="col-md-12">
     <div class="shadow">
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <router-link to="/" class="navbar-brand">Recipe Planner</router-link>

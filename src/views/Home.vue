@@ -1,9 +1,8 @@
 <template>
   <div class="col-md-12">
-
     <template v-if="user.loggedIn">
       <div class="row justify-content-center">
-        <div class="col-md-12" style="min-width: 640px;">
+        <div class="col-md-12">
           <div class="card">
             <div class="card-header">Calendar</div>
             <div class="card-body">
