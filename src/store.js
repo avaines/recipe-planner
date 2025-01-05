@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 const firebase = require('@/plugins/firebase.js');
 import rndHelpers from '@/helpers/RandomFunctions';
+import objHelpers from '@/helpers/ObjectFunctions';
 
 const store = createStore({
   state: {
@@ -52,12 +53,17 @@ const store = createStore({
           : recipe.ingredients.split(",").map(item => item.trim())
       }));
 
-      state.weekRecipes = {
-        w1: ensureArrayIngredients(uniqueRecipes.slice(0, daysPerWeek)),
-        w2: ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek, daysPerWeek * 2)),
-        w3: ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek * 2, daysPerWeek * 3)),
-        w4: ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek * 3, daysPerWeek * 4))
-      };
+      state.weekRecipes.w1 = ensureArrayIngredients(uniqueRecipes.slice(0, daysPerWeek));
+      state.weekRecipes.w1.shoppingList = objHelpers.getUniqueIngredients(state.weekRecipes.w1);
+
+      state.weekRecipes.w2 = ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek, daysPerWeek * 2));
+      state.weekRecipes.w2.shoppingList = objHelpers.getUniqueIngredients(state.weekRecipes.w2);
+
+      state.weekRecipes.w3 = ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek * 2, daysPerWeek * 3));
+      state.weekRecipes.w3.shoppingList = objHelpers.getUniqueIngredients(state.weekRecipes.w3);
+
+      state.weekRecipes.w4 = ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek * 3, daysPerWeek * 4));
+      state.weekRecipes.w4.shoppingList = objHelpers.getUniqueIngredients(state.weekRecipes.w4);
     }
   },
   actions: {

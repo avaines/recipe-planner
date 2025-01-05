@@ -98,22 +98,22 @@
                   <tr>
                     <td>
                       <ul class="list-unstyled">
-                        <li v-for="ingredient in weekRecipes.w1.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                        <li v-for="ingredient in weekRecipes.w1.shoppingList" v-bind:key="ingredient.id"> {{ ingredient }} </li>
                       </ul>
                     </td>
                     <td>
                       <ul class="list-unstyled">
-                        <li v-for="ingredient in weekRecipes.w2.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                        <li v-for="ingredient in weekRecipes.w2.shoppingList" v-bind:key="ingredient.id"> {{ ingredient }} </li>
                       </ul>
                     </td>
                     <td>
                       <ul class="list-unstyled">
-                        <li v-for="ingredient in weekRecipes.w3.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                        <li v-for="ingredient in weekRecipes.w3.shoppingList" v-bind:key="ingredient.id"> {{ ingredient }} </li>
                       </ul>
                     </td>
                     <td>
                       <ul class="list-unstyled">
-                        <li v-for="ingredient in weekRecipes.w4.shoppinglist" v-bind:key="ingredient.id"> {{ ingredient }} </li>
+                        <li v-for="ingredient in weekRecipes.w4.shoppingList" v-bind:key="ingredient.id"> {{ ingredient }} </li>
                       </ul>
                     </td>
                   </tr>

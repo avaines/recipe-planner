@@ -70,22 +70,41 @@ export default defineComponent({
     return {
       filterText: '',
       sortKey: 'recipe',
-      sortOrderAsc: true
+      sortOrderAsc: true,
+      recipes: [],
+      collectionName: ''
     }
   },
 
-  mounted () {
-    this.getRecipes()
+  async created () {
+    const user = firebase.auth.currentUser;
+    if (!user) {
+      return;
+    }
+    const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
+    if (!doc.exists) {
+      return;
+    }
+    const groupId = doc.data().groupId;
+    this.collectionName = `recipes-${groupId}`;
+
+    const ref = firebase.db.collection(this.collectionName);
+    ref.get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        this.recipes.push({ id: doc.id, ...doc.data() });
+      });
+    });
   },
 
   methods: {
-    getRecipes () {
-      this.$store.dispatch('loadRecipes')
-    },
     async deleteRecipe(id) {
       if (confirm("Are you sure?") == true) {
-        await firebase.db.collection('recipes').doc(id).delete()
-        this.getRecipes()
+        const deleteRef = await firebase.db.collection(this.collectionName).doc(id);
+        deleteRef.delete().then(() => {
+          this.recipes = this.recipes.filter(recipe => recipe.id !== id);
+        }).catch((error) => {
+          console.error("Error removing document: ", error);
+        });
       }
     }
   },

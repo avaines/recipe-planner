@@ -88,11 +88,23 @@ const firebase = require('@/plugins/firebase.js');
 export default {
   data() {
     return {
-      recipe: []
+      recipe: [],
+      collectionName: ''
     }
   },
-  created () {
-    const ref = firebase.db.collection('recipes').doc(this.$route.params.id);
+  async created () {
+    const user = firebase.auth.currentUser;
+    if (!user) {
+      return;
+    }
+    const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
+    if (!doc.exists) {
+      return;
+    }
+    const groupId = doc.data().groupId;
+    this.collectionName = `recipes-${groupId}`;
+
+    const ref = firebase.db.collection(this.collectionName).doc(this.$route.params.id);
     ref.get().then((doc) => {
       if (doc.exists) {
         this.recipe = doc.data();
@@ -103,7 +115,7 @@ export default {
   },
   methods: {
     async updateRecipe () {
-      const updateRef = await firebase.db.collection('recipes').doc(this.$route.params.id)
+      const updateRef = await firebase.db.collection(this.collectionName).doc(this.$route.params.id)
       updateRef.set({
         book: this.recipe.book,
         recipe: this.recipe.recipe,

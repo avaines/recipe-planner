@@ -1,11 +1,24 @@
 #!/bin/bash
 
+# This script automates the process of exporting Firestore data to a Google Cloud Storage (GCS) bucket
+# and then downloading it to a local directory. It also checks for required shell utilities and handles
+# the starting of Firebase emulators with the imported data.
+
+# Steps:
+# 1. Load environment variables from the .env file.
+# 2. Check if the export directory exists and is not empty.
+# 3. If the directory is not empty, prompt the user to update it or start the emulators without importing.
+# 4. Ensure required shell utils are installed.
+# 5. Export Firestore data to a GCS bucket.
+# 6. Download the exported data from GCS to the local directory.
+# 7. Start Firebase emulators with the imported data.
+
+
 # Load environment variables from .env file
 export $(grep -v '^#' .env | xargs)
 
-EXPORT_DIR="firebase/firestore-backup"
+EXPORT_DIR="firestore-backup"
 BUCKET_NAME="${VUE_APP_FIREBASE_PROJECT_ID}.appspot.com"
-REQUIRED_SHELL_UTILS=("gsutil" "gcloud" "firebase")
 
 
 # Check if the export directory exists and is not empty
@@ -20,6 +33,7 @@ else
   mkdir -p "$EXPORT_DIR"
 fi
 
+REQUIRED_SHELL_UTILS=("gsutil" "gcloud" "firebase")
 # Check if required commands are available
 for util in "${REQUIRED_SHELL_UTILS[@]}"; do
   if ! command -v ${util} &> /dev/null; then
