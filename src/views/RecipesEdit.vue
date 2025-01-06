@@ -48,7 +48,7 @@
                   <input id="timeConsuming" type="checkbox" class="form-check-input" name="timeConsuming" v-model="recipe.timeConsuming" />
                 </div>
 
-                <label for="marinateRequired" class="col-md-4 col-form-label text-md-end">Time Consuming?</label>
+                <label for="marinateRequired" class="col-md-4 col-form-label text-md-end">Marinate Required?</label>
                 <div class="col-md-1">
                   <input id="marinateRequired" type="checkbox" class="form-check-input" name="marinateRequired" v-model="recipe.marinateRequired" />
                 </div>
