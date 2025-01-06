@@ -61,8 +61,7 @@
 
 <script>
 import { defineComponent } from 'vue';
-
-const firebase = require('@/plugins/firebase.js');
+import { auth, db } from '@/plugins/firebase.js';
 import { mapGetters } from "vuex";
 
 export default defineComponent({
@@ -77,18 +76,18 @@ export default defineComponent({
   },
 
   async created () {
-    const user = firebase.auth.currentUser;
+    const user = auth.currentUser;
     if (!user) {
       return;
     }
-    const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
+    const doc = await db.collection('allow-users').doc(user.uid).get();
     if (!doc.exists) {
       return;
     }
     const groupId = doc.data().groupId;
     this.collectionName = `recipes-${groupId}`;
 
-    const ref = firebase.db.collection(this.collectionName);
+    const ref = db.collection(this.collectionName);
     ref.get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         this.recipes.push({ id: doc.id, ...doc.data() });
@@ -99,7 +98,7 @@ export default defineComponent({
   methods: {
     async deleteRecipe(id) {
       if (confirm("Are you sure?") == true) {
-        const deleteRef = await firebase.db.collection(this.collectionName).doc(id);
+        const deleteRef = await db.collection(this.collectionName).doc(id);
         deleteRef.delete().then(() => {
           this.recipes = this.recipes.filter(recipe => recipe.id !== id);
         }).catch((error) => {

@@ -56,7 +56,7 @@
 <script>
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
-import firebase from 'firebase/app';
+import { auth } from '@/plugins/firebase.js';
 import 'firebase/auth';
 
 export default defineComponent({
@@ -65,8 +65,8 @@ export default defineComponent({
     const user = computed(() => store.getters.user);
 
     const signOut = () => {
-      firebase.auth.signOut().then(() => {
-        firebase.auth.onAuthStateChanged(() => {
+      auth.signOut().then(() => {
+        auth.onAuthStateChanged(() => {
           this.$router.push({ name: 'Login' });
         });
       });

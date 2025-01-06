@@ -63,7 +63,7 @@
 </template>
 
 <script>
-const firebase = require('@/plugins/firebase.js');
+import { auth, db } from '@/plugins/firebase.js';
 
 export default {
   data() {
@@ -77,12 +77,12 @@ export default {
   },
   methods: {
     async addRecipe() {
-      const user = firebase.auth.currentUser;
+      const user = auth.currentUser;
       if (!user) {
         return;
       }
 
-      const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
+      const doc = await db.collection('allow-users').doc(user.uid).get();
       if (!doc.exists) {
         return;
       }
@@ -91,7 +91,7 @@ export default {
       const collectionName = `recipes-${groupId}`;
       const joinedIngredients = this.ingredients.join(', ');
 
-      await firebase.db.collection(collectionName).add({
+      await db.collection(collectionName).add({
         book: this.book,
         recipe: this.recipe,
         lunch: this.lunch,

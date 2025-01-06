@@ -78,8 +78,8 @@
 
 <script>
 import { defineComponent } from 'vue';
-import firebase from "firebase";
 import { v4 as uuidv4 } from 'uuid';
+import { auth, db } from '@/plugins/firebase.js';
 
 export default defineComponent({
   data() {
@@ -95,8 +95,7 @@ export default defineComponent({
 
   methods: {
     userRegistration() {
-      firebase
-      .auth()
+      auth
       .createUserWithEmailAndPassword(this.user.email, this.user.password)
       .then((res) => {
         res.user
@@ -106,7 +105,7 @@ export default defineComponent({
           .then(() => {
             const userId = res.user.uid;
             const groupId = uuidv4();
-            firebase.firestore().collection('allow-users').doc(userId).set({
+            db.collection('allow-users').doc(userId).set({
               displayName: res.user.name,
               email: res.user.email,
               enabled: false,

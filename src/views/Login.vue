@@ -72,7 +72,8 @@
 
 <script>
 import { defineComponent } from 'vue';
-import firebase from "firebase";
+import { auth, db } from '@/plugins/firebase.js';
+import firebase from 'firebase/app'; // Import firebase to access GoogleAuthProvider
 import { v4 as uuidv4 } from 'uuid';
 
 export default defineComponent({
@@ -90,25 +91,23 @@ export default defineComponent({
     signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
 
-      firebase
-        .auth()
+      auth
         .signInWithPopup(provider)
         .then((result) => {
           const user = result.user;
           const userId = user.uid;
           const groupId = uuidv4();
 
-          firebase.firestore().collection('allow-users').doc(userId).get()
+          db.collection('allow-users').doc(userId).get()
             .then((doc) => {
               if (!doc.exists) {
-                firebase.firestore().collection('allow-users').doc(userId).set({
+                db.collection('allow-users').doc(userId).set({
                   displayName: user.displayName,
                   email: user.email,
                   enabled: false,
                   groupId: groupId
                 })
                 .then(() => {
-                  console.log('User added to allow-users collection');
                   this.$store.commit('SET_LOGGED_IN', true);
                   this.$router.push('/');
                 })
@@ -121,10 +120,6 @@ export default defineComponent({
                 this.$router.push('/');
               }
             })
-            .catch((error) => {
-              console.error('Error checking allow-users collection:', error);
-              alert(error.message);
-            });
         })
         .catch((error) => {
           console.error('Error signing in with Google:', error);
@@ -133,8 +128,7 @@ export default defineComponent({
     },
 
     userLogin() {
-      firebase
-      .auth()
+      auth
       .signInWithEmailAndPassword(this.user.email, this.user.password)
       .then(() => {
         this.$store.commit('SET_LOGGED_IN', true)

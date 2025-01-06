@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-const firebase = require('@/plugins/firebase.js');
+import { auth, db } from '@/plugins/firebase.js';
 import rndHelpers from '@/helpers/RandomFunctions';
 import objHelpers from '@/helpers/ObjectFunctions';
 
@@ -79,19 +79,19 @@ const store = createStore({
       }
     },
     loadRecipes: async context => {
-      const user = firebase.auth.currentUser;
+      const user = auth.currentUser;
       if (!user) {
         return;
       }
 
-      const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
+      const doc = await db.collection('allow-users').doc(user.uid).get();
       if (!doc.exists) {
         return;
       }
 
       const groupId = doc.data().groupId;
       const collectionName = `recipes-${groupId}`;
-      let snapshot = await firebase.db.collection(collectionName).get();
+      let snapshot = await db.collection(collectionName).get();
       const recipes = [];
       snapshot.forEach(doc => {
         let appData = doc.data();
@@ -101,12 +101,12 @@ const store = createStore({
       context.commit('setRecipes', recipes);
     },
     loadWeeksRecipes: async context => {
-      const user = firebase.auth.currentUser;
+      const user = auth.currentUser;
       if (!user) {
         return;
       }
 
-      const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
+      const doc = await db.collection('allow-users').doc(user.uid).get();
       if (!doc.exists) {
         return;
       }
@@ -116,7 +116,7 @@ const store = createStore({
       const requiredRecipes = 20; // This will eventually move to a variable when it becomes an option for the user, currently static at 20
       const daysPerWeek = requiredRecipes / 4;
 
-      let snapshot = await firebase.db.collection(collectionName).get();
+      let snapshot = await db.collection(collectionName).get();
       const recipes = [];
 
       if (snapshot.size <= requiredRecipes) {
@@ -152,22 +152,23 @@ const store = createStore({
       }
     },
     async checkUserAuthentication({ commit }) {
-      const user = firebase.auth.currentUser;
+      const user = auth.currentUser;
+
       if (user) {
         try {
-          const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
+          const doc = await db.collection('allow-users').doc(user.uid).get();
           if (doc.exists && doc.data().enabled) {
             commit('SET_LOGGED_IN', true);
             commit('SET_USER', user);
           } else {
             alert('Your account is not enabled. Please contact support.');
-            await firebase.auth.signOut();
+            await auth.signOut();
             commit('SET_LOGGED_IN', false);
             commit('SET_USER', null);
           }
         } catch (error) {
           console.error("Error checking user enabled status: ", error);
-          await firebase.auth.signOut();
+          await auth.signOut();
           commit('SET_LOGGED_IN', false);
           commit('SET_USER', null);
         }
