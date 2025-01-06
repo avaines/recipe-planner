@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-// import firebase from 'firebase';
+import { auth, db } from '@/plugins/firebase.js';
 import store from '../store';
 import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
@@ -9,8 +9,6 @@ import ForgotPassword from '../views/ForgotPassword.vue';
 import RecipesAdd from '../views/RecipesAdd.vue';
 import RecipesEdit from '../views/RecipesEdit.vue';
 import RecipesManage from '../views/RecipesManage.vue';
-
-const firebase = require('@/plugins/firebase.js');
 
 const routes = [
   {
@@ -66,34 +64,35 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const user = firebase.auth.currentUser;
 
-  if (requiresAuth && user) {
-    try {
-      const doc = await firebase.db.collection('allow-users').doc(user.uid).get();
-      if (doc.exists && doc.data().enabled) {
-        next();
-      } else {
-        alert('Your account is not enabled. Please contact support.');
-        await firebase.auth().signOut();
+  auth.onAuthStateChanged(async (user) => {
+    if (requiresAuth && user) {
+      try {
+        const doc = await db.collection('allow-users').doc(user.uid).get();
+        if (doc.exists && doc.data().enabled) {
+          next();
+        } else {
+          alert('Your account is not enabled. Please contact support.');
+          await auth.signOut();
+          store.commit('SET_LOGGED_IN', false);
+          store.commit('SET_USER', null);
+          next({ name: 'Login' });
+        }
+      } catch (error) {
+        console.error("Error checking user enabled status: ", error);
+        await auth.signOut();
         store.commit('SET_LOGGED_IN', false);
         store.commit('SET_USER', null);
         next({ name: 'Login' });
       }
-    } catch (error) {
-      console.error("Error checking user enabled status: ", error);
-      await firebase.auth().signOut();
-      store.commit('SET_LOGGED_IN', false);
-      store.commit('SET_USER', null);
+    } else if (requiresAuth && !user) {
       next({ name: 'Login' });
+    } else {
+      next();
     }
-  } else if (requiresAuth && !user) {
-    next({ name: 'Login' });
-  } else {
-    next();
-  }
+  });
 });
 
 export default router;
