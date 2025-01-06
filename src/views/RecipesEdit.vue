@@ -37,17 +37,20 @@
                 </div>
               </div>
 
-              <div class="mb-3 row">
-                <label for="lunch" class="col-md-4 col-form-label text-md-end">Lunch?</label>
-
+              <div class="mb-2 row">
+                <label for="leftovers" class="col-md-4 col-form-label text-md-end">Makes Leftovers?</label>
                 <div class="col-md-1">
-                  <input
-                    id="lunch"
-                    type="checkbox"
-                    class="form-check-input"
-                    name="lunch"
-                    v-model="recipe.lunch"
-                  />
+                  <input id="leftovers" type="checkbox" class="form-check-input" name="leftovers" v-model="recipe.leftovers" />
+                </div>
+
+                <label for="timeConsuming" class="col-md-4 col-form-label text-md-end">Time Consuming?</label>
+                <div class="col-md-1">
+                  <input id="timeConsuming" type="checkbox" class="form-check-input" name="timeConsuming" v-model="recipe.timeConsuming" />
+                </div>
+
+                <label for="marinateRequired" class="col-md-4 col-form-label text-md-end">Time Consuming?</label>
+                <div class="col-md-1">
+                  <input id="marinateRequired" type="checkbox" class="form-check-input" name="marinateRequired" v-model="recipe.marinateRequired" />
                 </div>
               </div>
 
@@ -119,7 +122,9 @@ export default {
       updateRef.set({
         book: this.recipe.book,
         recipe: this.recipe.recipe,
-        lunch: this.recipe.lunch,
+        leftovers: this.recipe.leftovers,
+        timeConsuming: this.recipe.timeConsuming,
+        marinateRequired: this.recipe.marinateRequired,
         ingredients: this.recipe.ingredients,
       })
       this.$router.push({ name: 'ManageRecipes' });
