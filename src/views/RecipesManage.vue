@@ -17,7 +17,9 @@
                 <select v-model="sortKey" class="form-control mb-2">
                   <option value="book">Sort by Book</option>
                   <option value="recipe">Sort by Recipe</option>
-                  <option value="lunch">Sort by Lunch</option>
+                  <option value="leftovers">Sort by Leftovers</option>
+                  <option value="timeConsuming">Sort by Time Consuming</option>
+                  <option value="marinateRequired">Sort by Marinate Required</option>
                 </select>
               </div>
               <div class="col-md-1">
@@ -33,7 +35,7 @@
                   <tr>
                     <th>Book</th>
                     <th>Recipe</th>
-                    <th>Lunch</th>
+                    <th>Features</th>
                     <th>Ingredients</th>
                     <th></th>
                   </tr>
@@ -42,7 +44,17 @@
                   <tr v-for="recipe in filteredAndSortedRecipes" :key="recipe.id">
                     <td>{{ recipe.book }}</td>
                     <td>{{ recipe.recipe }}</td>
-                    <td>{{ recipe.lunch }}</td>
+                    <td>
+                      <span v-if="recipe.leftovers == true">
+                        <i class="bi bi-box2-heart" title="Produces leftovers"></i>
+                      </span>
+                      <span v-if="recipe.timeConsuming == true">
+                        <i class="bi bi-hourglass-split" title="Time consuming"></i>
+                      </span>
+                      <span v-if="recipe.marinateRequired == true">
+                        <i class="bi bi-droplet-half" title="Requires marinating"></i>
+                      </span>
+                    </td>
                     <td>{{ recipe.ingredients }}</td>
                     <td class="col-md-2">
                       <router-link :to="{name: 'Edit', params: { id: recipe.id }}" class="btn btn-primary mr-2"><i class="bi bi-pencil"></i></router-link>

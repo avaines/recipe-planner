@@ -32,7 +32,9 @@
                     v-for="recipe in weekRecipes.w1"
                     v-bind:key="recipe.id"
                     v-bind:book="recipe.book"
-                    v-bind:lunch="recipe.lunch"
+                    v-bind:leftovers="recipe.leftovers"
+                    v-bind:timeConsuming="recipe.timeConsuming"
+                    v-bind:marinateRequired="recipe.marinateRequired"
                     v-bind:recipe="recipe.recipe"
                   ></HomeTableElement>
                 </div>
@@ -44,7 +46,9 @@
                     v-for="recipe in weekRecipes.w2"
                     v-bind:key="recipe.id"
                     v-bind:book="recipe.book"
-                    v-bind:lunch="recipe.lunch"
+                    v-bind:leftovers="recipe.leftovers"
+                    v-bind:timeConsuming="recipe.timeConsuming"
+                    v-bind:marinateRequired="recipe.marinateRequired"
                     v-bind:recipe="recipe.recipe"
                   ></HomeTableElement>
                 </div>
@@ -55,7 +59,9 @@
                     v-for="recipe in weekRecipes.w3"
                     v-bind:key="recipe.id"
                     v-bind:book="recipe.book"
-                    v-bind:lunch="recipe.lunch"
+                    v-bind:leftovers="recipe.leftovers"
+                    v-bind:timeConsuming="recipe.timeConsuming"
+                    v-bind:marinateRequired="recipe.marinateRequired"
                     v-bind:recipe="recipe.recipe"
                   ></HomeTableElement>
                 </div>
@@ -66,7 +72,9 @@
                     v-for="recipe in weekRecipes.w4"
                     v-bind:key="recipe.id"
                     v-bind:book="recipe.book"
-                    v-bind:lunch="recipe.lunch"
+                    v-bind:leftovers="recipe.leftovers"
+                    v-bind:timeConsuming="recipe.timeConsuming"
+                    v-bind:marinateRequired="recipe.marinateRequired"
                     v-bind:recipe="recipe.recipe"
                   ></HomeTableElement>
                 </div>

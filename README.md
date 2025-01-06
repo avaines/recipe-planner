@@ -178,9 +178,8 @@ Stores the recipe data
 
 | Document | Fields |
 | -------- | ------- |
-| *Id* | *book*: "title",<br>*ingredients*: "comma,seperated,list",<br>*lunch*: true/false,<br>*recipe*: "name" |
-| *Id* | *book*: "title",<br>*ingredients*: "comma,seperated,list",<br>*lunch*: true/false,<br>*recipe*: "name" |
-
+| *Id* | *book*: "title",<br>*ingredients*: "comma,seperated,list",<br>*leftovers*: true/false,<br>*timeConsuming*: true/false,<br>*marinateRequired*: true/false,<br>*recipe*: "name" |
+| *Id* | *book*: "title",<br>*ingredients*: "comma,seperated,list",<br>*leftovers*: true/false,<br>*timeConsuming*: true/false,<br>*marinateRequired*: true/false,<br>*recipe*: "name" |
 
 ---
 

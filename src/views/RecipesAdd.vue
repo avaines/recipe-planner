@@ -20,10 +20,20 @@
                 </div>
               </div>
 
-              <div class="mb-3 row">
-                <label for="lunch" class="col-md-4 col-form-label text-md-end">Lunch?</label>
+              <div class="mb-2 row">
+                <label for="leftovers" class="col-md-4 col-form-label text-md-end">Makes Leftovers?</label>
                 <div class="col-md-1">
-                  <input id="lunch" type="checkbox" class="form-check-input" name="lunch" v-model="lunch" />
+                  <input id="leftovers" type="checkbox" class="form-check-input" name="leftovers" v-model="leftovers" />
+                </div>
+
+                <label for="timeConsuming" class="col-md-4 col-form-label text-md-end">Time Consuming?</label>
+                <div class="col-md-1">
+                  <input id="timeConsuming" type="checkbox" class="form-check-input" name="timeConsuming" v-model="timeConsuming" />
+                </div>
+
+                <label for="marinateRequired" class="col-md-4 col-form-label text-md-end">Time Consuming?</label>
+                <div class="col-md-1">
+                  <input id="marinateRequired" type="checkbox" class="form-check-input" name="marinateRequired" v-model="marinateRequired" />
                 </div>
               </div>
 
@@ -70,7 +80,9 @@ export default {
     return {
       book: null,
       recipe: null,
-      lunch: false,
+      leftovers: false,
+      timeConsuming: false,
+      marinateRequired: false,
       ingredients: [],
       newItem: ''
     }
@@ -94,7 +106,9 @@ export default {
       await db.collection(collectionName).add({
         book: this.book,
         recipe: this.recipe,
-        lunch: this.lunch,
+        leftovers: this.leftovers,
+        timeConsuming: this.timeConsuming,
+        marinateRequired: this.marinateRequired,
         ingredients: joinedIngredients
       })
       this.$router.push({ name: 'ManageRecipes' });

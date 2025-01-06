@@ -1,12 +1,18 @@
 <template>
   <div class="col border">
     <div class="row">
-      <div class="col-10">
+      <div class="col-8">
         <b>{{ book }}</b>
       </div>
-      <div class="col-2 justify-content-right">
-        <span v-if="lunch == true">
-          <i class="bi bi-box2-heart"></i>
+      <div class="col-4 justify-content-right">
+        <span v-if="leftovers == true">
+          <i class="bi bi-box2-heart" title="Produces leftovers"></i>
+        </span>
+        <span v-if="timeConsuming == true">
+          <i class="bi bi-hourglass-split" title="Time consuming"></i>
+        </span>
+        <span v-if="marinateRequired == true">
+          <i class="bi bi-droplet-half" title="Requires marinating"></i>
         </span>
       </div>
     </div>
@@ -24,7 +30,7 @@ module.exports = {
   data: function() {
     return {}
   },
-  props: ['book', 'lunch', 'recipe'],
+  props: ['book', 'leftovers', 'timeConsuming', 'marinateRequired', 'recipe'],
 };
 
 </script>
