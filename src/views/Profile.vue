@@ -67,7 +67,7 @@
 
 <script>
 import { defineComponent } from 'vue';
-import firebase from "firebase";
+import { auth, db } from '@/plugins/firebase.js';
 
 export default defineComponent({
   data() {
@@ -81,12 +81,12 @@ export default defineComponent({
     };
   },
   created() {
-    const user = firebase.auth().currentUser;
+    const user = auth.currentUser;
     if (user) {
       this.user.name = user.displayName;
       this.user.email = user.email;
 
-      firebase.firestore().collection('allow-users').doc(user.uid).get()
+      db.collection('allow-users').doc(user.uid).get()
         .then((doc) => {
           if (doc.exists) {
             this.groupId = doc.data().groupId;
@@ -109,9 +109,9 @@ export default defineComponent({
       }
     },
     updateGroupId() {
-      const user = firebase.auth().currentUser;
+      const user = auth.currentUser;
       if (user) {
-        firebase.firestore().collection('allow-users').doc(user.uid).update({
+        db.collection('allow-users').doc(user.uid).update({
           groupId: this.groupId
         })
         .then(() => {

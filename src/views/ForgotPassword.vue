@@ -42,7 +42,7 @@
 <script>
 
 import { defineComponent } from 'vue';
-import firebase from "firebase";
+import { auth } from '@/plugins/firebase.js';
 
 export default defineComponent({
   data() {
@@ -55,8 +55,7 @@ export default defineComponent({
 
   methods: {
     forgetPassword() {
-        firebase
-        .auth()
+        auth
         .sendPasswordResetEmail(this.user.email)
         .then(() => {
             alert('Check your registered email to reset the password!')
