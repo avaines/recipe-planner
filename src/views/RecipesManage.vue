@@ -35,7 +35,7 @@
                   <tr>
                     <th>Book</th>
                     <th>Recipe</th>
-                    <th>Features</th>
+                    <th>Notes</th>
                     <th>Ingredients</th>
                     <th></th>
                   </tr>

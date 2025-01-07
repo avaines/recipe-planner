@@ -118,7 +118,19 @@ export default {
   },
   methods: {
     async updateRecipe () {
+      if (!this.recipe.leftovers) {
+        this.recipe.leftovers = false;
+      }
+      if (!this.recipe.timeConsuming) {
+        this.recipe.timeConsuming = false;
+      }
+      if (!this.recipe.marinateRequired) {
+        this.recipe.marinateRequired = false;
+      }
+
       const updateRef = await db.collection(this.collectionName).doc(this.$route.params.id)
+
+      console.log(this.recipe, this.recipe.leftovers, this.recipe.timeConsuming, this.recipe.marinateRequired);
       updateRef.set({
         book: this.recipe.book,
         recipe: this.recipe.recipe,

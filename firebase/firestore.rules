@@ -21,11 +21,10 @@ service cloud.firestore {
 
     match /{document=**} {
       allow list: if isSignedIn() && getGroupId() != null;
-      allow read: if isSignedIn() && getGroupId() != null;
     }
 
     match /{recipesGroupId}/{document=**} {
-      allow create, write, delete: if isSignedIn() && isAllowedUser() && ("recipes-" + getGroupId()) == recipesGroupId
+      allow create, read, write, delete: if isSignedIn() && isAllowedUser() && ("recipes-" + getGroupId()) == recipesGroupId
     }
   }
 }
