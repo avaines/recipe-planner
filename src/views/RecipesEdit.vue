@@ -52,6 +52,11 @@
                 <div class="col-md-1">
                   <input id="marinateRequired" type="checkbox" class="form-check-input" name="marinateRequired" v-model="recipe.marinateRequired" />
                 </div>
+
+                <label for="glutenFree" class="col-md-4 col-form-label text-md-end">Gluten Free?</label>
+                <div class="col-md-1">
+                  <input id="glutenFree" type="checkbox" class="form-check-input" name="glutenFree" v-model="recipe.glutenFree" />
+                </div>
               </div>
 
               <div class="mb-3 row">
@@ -127,16 +132,20 @@ export default {
       if (!this.recipe.marinateRequired) {
         this.recipe.marinateRequired = false;
       }
+      if (!this.recipe.glutenFree) {
+        this.recipe.glutenFree = false;
+      }
 
       const updateRef = await db.collection(this.collectionName).doc(this.$route.params.id)
 
-      console.log(this.recipe, this.recipe.leftovers, this.recipe.timeConsuming, this.recipe.marinateRequired);
+      console.log(this.recipe, this.recipe.leftovers, this.recipe.timeConsuming, this.recipe.marinateRequired, this.recipe.glutenFree);
       updateRef.set({
         book: this.recipe.book,
         recipe: this.recipe.recipe,
         leftovers: this.recipe.leftovers,
         timeConsuming: this.recipe.timeConsuming,
         marinateRequired: this.recipe.marinateRequired,
+        glutenFree: this.recipe.glutenFree,
         ingredients: this.recipe.ingredients,
       })
       this.$router.push({ name: 'ManageRecipes' });

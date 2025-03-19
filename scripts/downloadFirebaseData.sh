@@ -23,11 +23,11 @@ BUCKET_NAME="${VUE_APP_FIREBASE_PROJECT_ID}.appspot.com"
 
 # Check if the export directory exists and is not empty
 if [ -d "$EXPORT_DIR" ] && [ "$(ls -A $EXPORT_DIR)" ]; then
-  read -p "The export directory already contains data. Do you want to update it first? (y/n): " choice
+  read -p "The export directory already contains data. Do you want to update it first? (y/N): " choice
   case "$choice" in
     y|Y ) echo "Updating the export directory...";;
     n|N ) echo "Starting emulators without importing first."; firebase emulators:start --import ${EXPORT_DIR};;
-    * ) echo "Invalid choice. Aborting."; exit 1;;
+    * ) echo "Starting emulators without importing first."; firebase emulators:start --import ${EXPORT_DIR};;
   esac
 else
   mkdir -p "$EXPORT_DIR"

@@ -1,7 +1,7 @@
 <!-- src/components/Footer.vue -->
 <template>
   <hr>
-  <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-to col-md-10">
+  <footer class="footer d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-to col-md-10">
       <div class="col-md-2"></div>
       <div class="col-md-4 d-flex align-items-center">
         <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
@@ -14,7 +14,7 @@
         <li class="ms-3"><a class="text-body-secondary" href="https://github.com/avaines/recipe-planner/" target="_blank"><i class="bi bi-github"></i></a></li>
         <li class="ms-3"><a class="text-body-secondary" href="https://www.vaines.org" target="_blank"><i class="bi bi-house"></i></a></li>
       </ul>
-    </footer>
+  </footer>
 <br>
 
 </template>

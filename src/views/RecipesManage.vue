@@ -20,6 +20,7 @@
                   <option value="leftovers">Sort by Leftovers</option>
                   <option value="timeConsuming">Sort by Time Consuming</option>
                   <option value="marinateRequired">Sort by Marinate Required</option>
+                  <option value="glutenFree">Sort by Gluten Free</option>
                 </select>
               </div>
               <div class="col-md-1">
@@ -53,6 +54,9 @@
                       </span>
                       <span v-if="recipe.marinateRequired == true">
                         <i class="bi bi-droplet-half" title="Requires marinating"></i>
+                      </span>
+                      <span v-if="recipe.glutenFree == true">
+                        <i class="bi bi-feather2" title="Gluten Free"></i>
                       </span>
                     </td>
                     <td>{{ recipe.ingredients }}</td>
