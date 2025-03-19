@@ -14,6 +14,9 @@
         <span v-if="marinateRequired == true">
           <i class="bi bi-droplet-half" title="Requires marinating"></i>
         </span>
+        <span v-if="glutenFree == true">
+          <i class="bi bi-feather2" title="Gluten free"></i>
+        </span>
       </div>
     </div>
     <div class="row">
@@ -30,7 +33,7 @@ module.exports = {
   data: function() {
     return {}
   },
-  props: ['book', 'leftovers', 'timeConsuming', 'marinateRequired', 'recipe'],
+  props: ['book', 'leftovers', 'timeConsuming', 'marinateRequired', 'glutenFree', 'recipe'],
 };
 
 </script>

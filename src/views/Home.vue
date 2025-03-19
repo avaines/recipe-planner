@@ -3,7 +3,7 @@
     <template v-if="user.loggedIn">
       <div class="row justify-content-center">
         <div class="col-md-12">
-          <div class="card">
+          <div class="card print-calendar">
             <div class="card-header">Calendar</div>
             <div class="card-body">
               <div class="col-md-12 justify-content-center">
@@ -35,6 +35,7 @@
                     v-bind:leftovers="recipe.leftovers"
                     v-bind:timeConsuming="recipe.timeConsuming"
                     v-bind:marinateRequired="recipe.marinateRequired"
+                    v-bind:glutenFree="recipe.glutenFree"
                     v-bind:recipe="recipe.recipe"
                   ></HomeTableElement>
                 </div>
@@ -49,6 +50,7 @@
                     v-bind:leftovers="recipe.leftovers"
                     v-bind:timeConsuming="recipe.timeConsuming"
                     v-bind:marinateRequired="recipe.marinateRequired"
+                    v-bind:glutenFree="recipe.glutenFree"
                     v-bind:recipe="recipe.recipe"
                   ></HomeTableElement>
                 </div>
@@ -62,6 +64,7 @@
                     v-bind:leftovers="recipe.leftovers"
                     v-bind:timeConsuming="recipe.timeConsuming"
                     v-bind:marinateRequired="recipe.marinateRequired"
+                    v-bind:glutenFree="recipe.glutenFree"
                     v-bind:recipe="recipe.recipe"
                   ></HomeTableElement>
                 </div>
@@ -75,6 +78,7 @@
                     v-bind:leftovers="recipe.leftovers"
                     v-bind:timeConsuming="recipe.timeConsuming"
                     v-bind:marinateRequired="recipe.marinateRequired"
+                    v-bind:glutenFree="recipe.glutenFree"
                     v-bind:recipe="recipe.recipe"
                   ></HomeTableElement>
                 </div>
@@ -86,10 +90,10 @@
 
       </div>
     </div>
-    <hr style="page-break-after: always;">
+    <hr>
       <div class="row justify-content-center">
         <div class="col-md-10">
-          <div class="card">
+          <div class="card print-shopping-list">
             <div class="card-header">Shopping List</div>
             <div class="card-body table-responsive">
               <table class="table table-bordered">
@@ -130,6 +134,7 @@
           </div>
         </div>
       </div>
+      <button @click="printTables" style="visibility: hidden;">Print Tables</button>
     </template>
     <template v-else>
       <div class="row justify-content-center">
@@ -164,6 +169,9 @@ export default defineComponent({
   methods: {
     getRecipes () {
       this.$store.dispatch('loadWeeksRecipes');
+    },
+    printTables() {
+      window.print();
     }
   },
 
@@ -179,3 +187,29 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+@media print {
+  /* Hide all elements by default */
+  .navbar, .app, .shadow, .footer *{
+    visibility: hidden
+  }
+
+  /* Show only the Calendar and Shopping List tables */
+  .print-calendar, .print-shopping-list {
+    visibility: visible !important;
+  }
+
+  /* Set landscape orientation for the Calendar table */
+  .print-calendar {
+    table-layout: auto;
+  }
+
+  /* Set portrait orientation for the Shopping List table */
+  .print-shopping-list {
+    /* width: 100%;
+    height: auto; */
+    page-break-after: avoid;
+  }
+}
+</style>

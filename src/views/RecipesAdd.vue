@@ -35,6 +35,11 @@
                 <div class="col-md-1">
                   <input id="marinateRequired" type="checkbox" class="form-check-input" name="marinateRequired" v-model="marinateRequired" />
                 </div>
+
+                <label for="glutenFree" class="col-md-4 col-form-label text-md-end">Gluten Free?</label>
+                <div class="col-md-1">
+                  <input id="glutenFree" type="checkbox" class="form-check-input" name="glutenFree" v-model="glutenFree" />
+                </div>
               </div>
 
               <div class="mb-3 row">
@@ -83,6 +88,7 @@ export default {
       leftovers: false,
       timeConsuming: false,
       marinateRequired: false,
+      glutenFree: false,
       ingredients: [],
       newItem: ''
     }
@@ -109,6 +115,7 @@ export default {
         leftovers: this.leftovers,
         timeConsuming: this.timeConsuming,
         marinateRequired: this.marinateRequired,
+        glutenFree: this.glutenFree,
         ingredients: joinedIngredients
       })
       this.$router.push({ name: 'ManageRecipes' });
