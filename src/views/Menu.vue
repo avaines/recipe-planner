@@ -15,6 +15,7 @@
             </button>
             </div>
             <div class="p-6">
+              <div class="menu-scroll">
               <div class="menu-grid">
                 <div class="day-header" v-for="day in days" :key="day">{{ day }}</div>
                 <div v-for="(recipe,index) in flatRecipes" :key="index" class="menu-recipe-card">
@@ -27,6 +28,7 @@
                     <span v-if="recipe.timeConsuming" class="badge badge-danger">Time</span>
                   </div>
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -213,6 +215,11 @@ export default defineComponent({
 .container { max-width:1200px; }
 .min-h-screen { min-height:100vh; }
 .menu-grid { display:grid; grid-template-columns: repeat(5, 1fr); gap:1rem; }
+.menu-scroll { overflow-x:auto; -webkit-overflow-scrolling: touch; }
+/* On small screens, give the grid a min-width so it can scroll instead of squashing */
+@media (max-width: 768px) {
+  .menu-grid { min-width: 700px; }
+}
 .day-header { font-weight:600; text-align:center; }
 .menu-recipe-card { background:#fff; border:1px solid #e5e7eb; padding:.75rem; border-radius:.5rem; box-shadow:0 1px 2px rgba(0,0,0,.05); }
 .recipe-name { font-weight:600; }
@@ -246,6 +253,8 @@ export default defineComponent({
   .menu-grid { grid-template-columns: repeat(5, 1fr); }
   .shopping-grid { grid-template-columns: repeat(4, 1fr); }
   .shopping-week { break-inside: avoid; page-break-inside: avoid; }
+  /* Disable mobile scroll wrapper during print */
+  .menu-scroll { overflow: visible !important; }
   /* Page size: browsers apply single @page per doc; favor landscape for first page via scaling, allow portrait-friendly content using max-width rules */
   @page { size: A4 landscape; margin: 10mm; }
 }
