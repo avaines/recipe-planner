@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen">
     <div class="container mx-auto p-6">
-      <div class="mb-8 print-section menu-section bg-white border border-gray-200 rounded-lg shadow">
+      <div ref="menuSection" class="mb-8 print-section menu-section bg-white border border-gray-200 rounded-lg shadow">
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <div>
             <h2 class="font-semibold">Weekly Menu Plan</h2>
@@ -28,7 +28,7 @@
           </div>
         </div>
       </div>
-      <div class="bg-white border border-gray-200 rounded-lg shadow print-section lists-section">
+  <div ref="listsSection" class="bg-white border border-gray-200 rounded-lg shadow print-section lists-section">
         <div class="px-6 py-4 border-b border-gray-200">
           <h2 class="font-semibold">Weekly Shopping Lists</h2>
           <p v-if="generatedAt" class="text-xs text-gray-500 mt-1">Based on menu generated: {{ formattedGeneratedAt }}</p>
@@ -48,7 +48,7 @@
   </div>
 </template>
 <script>
-import { defineComponent, computed, onMounted, ref, inject } from 'vue';
+import { defineComponent, computed, onMounted, onUnmounted, ref, inject } from 'vue';
 import { useStore } from 'vuex';
 
 export default defineComponent({
@@ -88,6 +88,55 @@ export default defineComponent({
       return [...wk.w1, ...wk.w2, ...wk.w3, ...wk.w4];
     });
     const toast = inject('toast', null);
+    const menuSection = ref(null);
+    const listsSection = ref(null);
+    const mmToPx = () => {
+      const probe = document.createElement('div');
+      probe.style.width = '100mm';
+      probe.style.position = 'absolute';
+      probe.style.visibility = 'hidden';
+      document.body.appendChild(probe);
+      const px = probe.getBoundingClientRect().width;
+      probe.remove();
+      return px / 100; // px per mm
+    };
+    const scaleToFit = (el, targetWidthMM, targetHeightMM) => {
+      if (!el) return 1;
+      const pxPerMm = mmToPx();
+      const targetW = targetWidthMM * pxPerMm;
+      const targetH = targetHeightMM * pxPerMm;
+      // Reset any previous inline transforms to measure natural size
+      el.style.transform = 'none';
+      el.style.transformOrigin = 'top left';
+      el.style.width = `${targetWidthMM}mm`;
+      // Measure content size
+      const contentW = el.scrollWidth;
+      const contentH = el.scrollHeight;
+      const s = Math.min(targetW / contentW, targetH / contentH, 1);
+      el.style.height = `${targetHeightMM}mm`;
+      el.style.overflow = 'hidden';
+      el.style.transform = `scale(${s})`;
+      return s;
+    };
+    const clearScale = (el) => {
+      if (!el) return;
+      el.style.transform = '';
+      el.style.height = '';
+      el.style.width = '';
+      el.style.overflow = '';
+      el.style.transformOrigin = '';
+    };
+    const beforePrint = () => {
+      // A4 landscape with 10mm margins defined in @page
+      const targetWidthMM = 297 - 20;
+      const targetHeightMM = 210 - 20;
+      scaleToFit(menuSection.value, targetWidthMM, targetHeightMM);
+      scaleToFit(listsSection.value, targetWidthMM, targetHeightMM);
+    };
+    const afterPrint = () => {
+      clearScale(menuSection.value);
+      clearScale(listsSection.value);
+    };
     const regenerate = async () => {
       if (loading.value) return;
       loading.value = true;
@@ -102,8 +151,16 @@ export default defineComponent({
       }
     };
     const formattedGeneratedAt = computed(()=> generatedAt.value ? generatedAt.value.toLocaleString() : '');
-    onMounted(()=> { if (flatRecipes.value.length === 0) regenerate(); else generatedAt.value = new Date(); });
-    return { weeks, normalizedWeeks, days, flatRecipes, regenerate, loading, generatedAt, formattedGeneratedAt };
+    onMounted(()=> {
+      window.addEventListener('beforeprint', beforePrint);
+      window.addEventListener('afterprint', afterPrint);
+      if (flatRecipes.value.length === 0) regenerate(); else generatedAt.value = new Date();
+    });
+    onUnmounted(()=> {
+      window.removeEventListener('beforeprint', beforePrint);
+      window.removeEventListener('afterprint', afterPrint);
+    });
+    return { weeks, normalizedWeeks, days, flatRecipes, regenerate, loading, generatedAt, formattedGeneratedAt, menuSection, listsSection };
   }
 });
 </script>
