@@ -151,14 +151,26 @@ export default defineComponent({
       }
     };
     const formattedGeneratedAt = computed(()=> generatedAt.value ? generatedAt.value.toLocaleString() : '');
+    let mql;
+    const mqlHandler = (e) => { if (e.matches) beforePrint(); else afterPrint(); };
     onMounted(()=> {
       window.addEventListener('beforeprint', beforePrint);
       window.addEventListener('afterprint', afterPrint);
+      // Fallback for Safari and some browsers that only fire matchMedia
+      if (window.matchMedia) {
+        mql = window.matchMedia('print');
+        if (mql && mql.addListener) mql.addListener(mqlHandler);
+        else if (mql && mql.addEventListener) mql.addEventListener('change', mqlHandler);
+      }
       if (flatRecipes.value.length === 0) regenerate(); else generatedAt.value = new Date();
     });
     onUnmounted(()=> {
       window.removeEventListener('beforeprint', beforePrint);
       window.removeEventListener('afterprint', afterPrint);
+      if (mql) {
+        if (mql.removeListener) mql.removeListener(mqlHandler);
+        else if (mql.removeEventListener) mql.removeEventListener('change', mqlHandler);
+      }
     });
     return { weeks, normalizedWeeks, days, flatRecipes, regenerate, loading, generatedAt, formattedGeneratedAt, menuSection, listsSection };
   }
