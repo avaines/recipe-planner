@@ -81,6 +81,10 @@
                   <i :class="['pi', enabled ? 'pi-check-circle' : 'pi-clock']"></i>
                   {{ enabled ? 'Enabled' : 'Pending Enablement' }}
                 </span>
+                <span class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold" :class="csvEnabled ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'">
+                  <i :class="['pi', csvEnabled ? 'pi-database' : 'pi-ban']"></i>
+                  {{ csvEnabled ? 'CSV I/O Enabled' : 'CSV I/O Disabled' }}
+                </span>
                 <span class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700" v-if="!loadingRecipes">
                   <i class="pi pi-book"></i>
                   {{ recipeCount }} recipe{{ recipeCount===1 ? '' : 's' }}
@@ -92,9 +96,13 @@
             <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
               <h3 class="font-semibold text-gray-800 mb-4">Data Management</h3>
               <p class="text-sm text-gray-600 mb-4">Export your recipes to CSV or import from a CSV. Imports will overwrite existing recipes when both name and book match (case-insensitive).</p>
+              <div v-if="!csvEnabled" class="rounded-md bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-gray-700 mb-4 flex gap-2 items-start">
+                <i class="pi pi-info-circle mt-0.5"></i>
+                <p>Import/Export is disabled for your account. Ask an administrator to set <code>csvEnabled: true</code> on your profile in <code>allow-users</code> to enable this feature.</p>
+              </div>
               <div class="flex flex-wrap gap-3">
-                <button type="button" @click="exportRecipesCsv" :disabled="busyData" class="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"><i class="pi pi-download"></i><span>Export CSV</span></button>
-                <button type="button" @click="triggerImport" :disabled="busyData" class="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"><i class="pi pi-upload"></i><span>Import CSV</span></button>
+                <button type="button" @click="exportRecipesCsv" :disabled="busyData || !csvEnabled" class="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"><i class="pi pi-download"></i><span>Export CSV</span></button>
+                <button type="button" @click="triggerImport" :disabled="busyData || !csvEnabled" class="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"><i class="pi pi-upload"></i><span>Import CSV</span></button>
                 <input ref="importInput" type="file" accept=".csv,text/csv" class="hidden" @change="onImportFileChange" />
               </div>
               <div v-if="busyData" class="mt-3 text-xs text-gray-500 flex items-center gap-2"><i class="pi pi-spin pi-spinner"></i><span>Processing…</span></div>
@@ -115,6 +123,7 @@ export default defineComponent({
       user: { name: '', email: '' },
       groupId: '',
       enabled: false,
+      csvEnabled: false,
       isEditingGroupId: false,
       recipeCount: 0,
       loadingRecipes: true,
@@ -137,6 +146,7 @@ export default defineComponent({
           const data = doc.data();
           this.groupId = data.groupId;
           if (Object.prototype.hasOwnProperty.call(data,'enabled')) this.enabled = !!data.enabled;
+          if (Object.prototype.hasOwnProperty.call(data,'csvEnabled')) this.csvEnabled = !!data.csvEnabled;
           this.fetchRecipeCount();
         } else {
           this.toast && this.toast({ type:'error', title:'Profile', message:'User metadata missing.' });
@@ -244,8 +254,9 @@ export default defineComponent({
       });
       return map;
     },
-    triggerImport(){ if (this.$refs && this.$refs.importInput) this.$refs.importInput.click(); },
+    triggerImport(){ if (!this.csvEnabled) { this.toast && this.toast({ type:'warn', title:'Import Disabled', message:'CSV import is disabled for this account.' }); return; } if (this.$refs && this.$refs.importInput) this.$refs.importInput.click(); },
     async onImportFileChange(e){
+      if (!this.csvEnabled) { this.toast && this.toast({ type:'warn', title:'Import Disabled', message:'CSV import is disabled for this account.' }); return; }
       const file = e.target.files && e.target.files[0];
       if (!file) return;
       try {
@@ -274,8 +285,9 @@ export default defineComponent({
         })).filter(x=> x.name && x.book);
         if (!items.length) { this.toast && this.toast({ type:'warn', title:'Import', message:'No valid rows with both name and book.' }); return; }
         const user = auth.currentUser; if(!user) throw new Error('Not authenticated');
-        const allow = await db.collection('allow-users').doc(user.uid).get(); if(!allow.exists) throw new Error('Missing allow-users');
-        const groupId = allow.data().groupId; const col = db.collection(`recipes-${groupId}`);
+  const allow = await db.collection('allow-users').doc(user.uid).get(); if(!allow.exists) throw new Error('Missing allow-users');
+  const allowData = allow.data(); if (!allowData.csvEnabled) throw new Error('CSV import/export disabled for this account');
+  const groupId = allowData.groupId; const col = db.collection(`recipes-${groupId}`);
         // Load existing and build lookup
         const existingSnap = await col.get();
         const existing = new Map();
@@ -315,9 +327,11 @@ export default defineComponent({
     async exportRecipesCsv(){
       try {
         this.busyData = true;
+        if (!this.csvEnabled) throw new Error('CSV import/export disabled for this account');
         const user = auth.currentUser; if(!user) throw new Error('Not authenticated');
         const allow = await db.collection('allow-users').doc(user.uid).get(); if(!allow.exists) throw new Error('Missing allow-users');
-        const groupId = allow.data().groupId; const col = db.collection(`recipes-${groupId}`);
+        const allowData = allow.data(); if (!allowData.csvEnabled) throw new Error('CSV import/export disabled for this account');
+        const groupId = allowData.groupId; const col = db.collection(`recipes-${groupId}`);
         const snap = await col.get();
   const rows = [];
   const header = ['name','book','ingredients','leftovers','glutenFree','marinateRequired','timeConsuming'];
