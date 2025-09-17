@@ -85,9 +85,12 @@
               <label class="flex items-center gap-2"><input type="checkbox" v-model="form.marinateRequired" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" /> <span>Requires Marinade</span></label>
               <label class="flex items-center gap-2"><input type="checkbox" v-model="form.timeConsuming" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" /> <span>Time Consuming</span></label>
             </div>
-            <div class="flex justify-end gap-3 pt-2">
-              <button type="button" @click="close" class="inline-flex items-center px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">Cancel</button>
-              <button type="submit" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium">{{ editing ? 'Save Changes' : 'Add Recipe' }}</button>
+            <div class="flex justify-between items-center gap-3 pt-2">
+              <button v-if="editing && currentRecipe" type="button" @click="remove(currentRecipe)" class="inline-flex items-center px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white font-medium"><i class="pi pi-trash mr-2"></i>Delete</button>
+              <div class="ml-auto flex gap-3">
+                <button type="button" @click="close" class="inline-flex items-center px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">Cancel</button>
+                <button type="submit" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium">{{ editing ? 'Save Changes' : 'Add Recipe' }}</button>
+              </div>
             </div>
           </form>
         </div>
@@ -115,6 +118,7 @@ export default defineComponent({
   const ingredientField = ref(null);
   const editingIngredient = ref(null);
   const editingValue = ref('');
+  const currentRecipe = computed(()=> recipes.value.find(r=> r.id===currentId.value) || null);
 
     const load = async () => {
       const user = auth.currentUser; if(!user) return;
@@ -176,7 +180,7 @@ export default defineComponent({
         // optional: ignore
       }
     });
-    return { search, recipes, filtered, dialog, editing, form, ingredientInput, ingredientsList, ingredientField, addIngredient, beginIngredientEdit, commitIngredient, cancelIngredient, removeIngredient, editingIngredient, editingValue, openAdd, edit, remove, close, save };
+  return { search, recipes, filtered, dialog, editing, form, ingredientInput, ingredientsList, ingredientField, addIngredient, beginIngredientEdit, commitIngredient, cancelIngredient, removeIngredient, editingIngredient, editingValue, openAdd, edit, remove, close, save, currentRecipe, currentId };
   }
 });
 </script>
