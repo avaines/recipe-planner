@@ -109,6 +109,7 @@ export default defineComponent({
               displayName: res.user.name,
               email: res.user.email,
               enabled: false,
+              csvEnabled: false,
               groupId: groupId
             })
             .then(() => {

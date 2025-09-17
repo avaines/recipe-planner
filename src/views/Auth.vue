@@ -145,6 +145,7 @@ export default defineComponent({
               displayName: user.displayName,
               email: user.email,
               enabled: false,
+              csvEnabled: false,
               groupId: uuidv4()
             });
           }
