@@ -1,45 +1,53 @@
 <template>
   <div class="min-h-screen">
     <div class="container mx-auto p-6">
-      <div ref="menuSection" class="mb-8 print-section menu-section bg-white border border-gray-200 rounded-lg shadow">
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <div>
-            <h2 class="font-semibold">Weekly Menu Plan</h2>
-            <p v-if="generatedAt" class="text-xs text-gray-500 mt-1">Generated: {{ formattedGeneratedAt }}</p>
-          </div>
-          <button @click="regenerate" :disabled="loading" class="no-print inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
-            <i :class="['pi', loading ? 'pi-spin pi-spinner' : 'pi-refresh']"></i>
-            <span>{{ loading ? 'Generating...' : 'Regenerate Menu' }}</span>
-          </button>
-        </div>
-        <div class="p-6">
-          <div class="menu-grid">
-            <div class="day-header" v-for="day in days" :key="day">{{ day }}</div>
-            <div v-for="(recipe,index) in flatRecipes" :key="index" class="menu-recipe-card">
-              <div class="recipe-name">{{ recipe.recipe || recipe.name }}</div>
-              <div class="recipe-book text-sm text-gray-600">{{ recipe.book }}</div>
-              <div class="recipe-tags flex flex-wrap gap-1 mt-1">
-                <span v-if="recipe.leftovers" class="badge badge-info">Leftovers</span>
-                <span v-if="recipe.glutenFree" class="badge badge-success">GF</span>
-                <span v-if="recipe.marinateRequired || recipe.marinade" class="badge badge-warning">Marinade</span>
-                <span v-if="recipe.timeConsuming" class="badge badge-danger">Time</span>
+      <div class="mb-8 print-section menu-section bg-white border border-gray-200 rounded-lg shadow">
+        <div ref="menuFrame" class="print-frame">
+          <div ref="menuFrameContent" class="print-frame-content">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+            <div>
+              <h2 class="font-semibold">Weekly Menu Plan</h2>
+              <p v-if="generatedAt" class="text-xs text-gray-500 mt-1">Generated: {{ formattedGeneratedAt }}</p>
+            </div>
+            <button @click="regenerate" :disabled="loading" class="no-print inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+              <i :class="['pi', loading ? 'pi-spin pi-spinner' : 'pi-refresh']"></i>
+              <span>{{ loading ? 'Generating...' : 'Regenerate Menu' }}</span>
+            </button>
+            </div>
+            <div class="p-6">
+              <div class="menu-grid">
+                <div class="day-header" v-for="day in days" :key="day">{{ day }}</div>
+                <div v-for="(recipe,index) in flatRecipes" :key="index" class="menu-recipe-card">
+                  <div class="recipe-name">{{ recipe.recipe || recipe.name }}</div>
+                  <div class="recipe-book text-sm text-gray-600">{{ recipe.book }}</div>
+                  <div class="recipe-tags flex flex-wrap gap-1 mt-1">
+                    <span v-if="recipe.leftovers" class="badge badge-info">Leftovers</span>
+                    <span v-if="recipe.glutenFree" class="badge badge-success">GF</span>
+                    <span v-if="recipe.marinateRequired || recipe.marinade" class="badge badge-warning">Marinade</span>
+                    <span v-if="recipe.timeConsuming" class="badge badge-danger">Time</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-  <div ref="listsSection" class="bg-white border border-gray-200 rounded-lg shadow print-section lists-section">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="font-semibold">Weekly Shopping Lists</h2>
-          <p v-if="generatedAt" class="text-xs text-gray-500 mt-1">Based on menu generated: {{ formattedGeneratedAt }}</p>
-        </div>
-        <div class="p-6">
-          <div class="shopping-grid">
-            <div v-for="(week, idx) in normalizedWeeks" :key="idx" class="shopping-week">
-              <h3 class="font-semibold mb-2">Week {{ idx+1 }}</h3>
-              <ul class="ingredient-list">
-                <li v-for="ingredient in week.shoppingList" :key="ingredient">{{ ingredient }}</li>
-              </ul>
+      <div class="bg-white border border-gray-200 rounded-lg shadow print-section lists-section">
+        <div ref="listsFrame" class="print-frame">
+          <div ref="listsFrameContent" class="print-frame-content">
+            <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="font-semibold">Weekly Shopping Lists</h2>
+            <p v-if="generatedAt" class="text-xs text-gray-500 mt-1">Based on menu generated: {{ formattedGeneratedAt }}</p>
+            </div>
+            <div class="p-6">
+              <div class="shopping-grid">
+                <div v-for="(week, idx) in normalizedWeeks" :key="idx" class="shopping-week">
+                  <h3 class="font-semibold mb-2">Week {{ idx+1 }}</h3>
+                  <ul class="ingredient-list">
+                    <li v-for="ingredient in week.shoppingList" :key="ingredient">{{ ingredient }}</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -88,8 +96,10 @@ export default defineComponent({
       return [...wk.w1, ...wk.w2, ...wk.w3, ...wk.w4];
     });
     const toast = inject('toast', null);
-    const menuSection = ref(null);
-    const listsSection = ref(null);
+  const menuFrame = ref(null);
+  const listsFrame = ref(null);
+  const menuFrameContent = ref(null);
+  const listsFrameContent = ref(null);
     const mmToPx = () => {
       const probe = document.createElement('div');
       probe.style.width = '100mm';
@@ -100,42 +110,65 @@ export default defineComponent({
       probe.remove();
       return px / 100; // px per mm
     };
-    const scaleToFit = (el, targetWidthMM, targetHeightMM) => {
-      if (!el) return 1;
+    const scaleToFit = (frameEl, contentEl, targetWidthMM, targetHeightMM) => {
+      if (!frameEl || !contentEl) return 1;
       const pxPerMm = mmToPx();
       const targetW = targetWidthMM * pxPerMm;
       const targetH = targetHeightMM * pxPerMm;
       // Reset any previous inline transforms to measure natural size
-      el.style.transform = 'none';
-      el.style.transformOrigin = 'top left';
-      el.style.width = `${targetWidthMM}mm`;
-      // Measure content size
-      const contentW = el.scrollWidth;
-      const contentH = el.scrollHeight;
-      const s = Math.min(targetW / contentW, targetH / contentH, 1);
-      el.style.height = `${targetHeightMM}mm`;
-      el.style.overflow = 'hidden';
-      el.style.transform = `scale(${s})`;
+      contentEl.style.transform = 'none';
+      contentEl.style.transformOrigin = 'top left';
+      contentEl.style.zoom = '';
+      // Force a reflow to ensure measurements are up to date
+      // eslint-disable-next-line no-unused-expressions
+      contentEl.offsetHeight;
+      // Measure content size at its current layout dimensions
+      const rect = contentEl.getBoundingClientRect();
+      let contentW = rect.width;
+      let contentH = rect.height;
+      // Compute scale with a small safety margin to avoid edge cropping due to rounding
+      const sRaw = Math.min(targetW / contentW, targetH / contentH);
+      const s = Math.min(sRaw * 0.98, 1);
+      // Size the outer frame and apply scale to inner content
+      frameEl.style.width = `${targetWidthMM}mm`;
+      frameEl.style.height = `${targetHeightMM}mm`;
+      frameEl.style.overflow = 'hidden';
+      // Prefer zoom for print pagination in WebKit/Blink; fallback to transform
+      const zoomSupported = 'zoom' in contentEl.style;
+      if (zoomSupported) {
+        contentEl.style.zoom = s;
+        contentEl.style.transform = 'none';
+      } else {
+        contentEl.style.transform = `scale(${s})`;
+      }
       return s;
     };
-    const clearScale = (el) => {
-      if (!el) return;
-      el.style.transform = '';
-      el.style.height = '';
-      el.style.width = '';
-      el.style.overflow = '';
-      el.style.transformOrigin = '';
+    const clearScale = (frameEl, contentEl) => {
+      if (frameEl) {
+        frameEl.style.height = '';
+        frameEl.style.width = '';
+        frameEl.style.overflow = '';
+      }
+      if (contentEl) {
+        contentEl.style.transform = '';
+        contentEl.style.transformOrigin = '';
+        contentEl.style.zoom = '';
+      }
     };
     const beforePrint = () => {
       // A4 landscape with 10mm margins defined in @page
-      const targetWidthMM = 297 - 20;
-      const targetHeightMM = 210 - 20;
-      scaleToFit(menuSection.value, targetWidthMM, targetHeightMM);
-      scaleToFit(listsSection.value, targetWidthMM, targetHeightMM);
+      const marginMM = 10; // matches @page margin
+      const fullW = 297 - marginMM*2;
+      const fullH = 210 - marginMM*2;
+      const FRACTION = 0.9; // scale target area to 90% of page content
+      const targetWidthMM = fullW * FRACTION;
+      const targetHeightMM = fullH * FRACTION;
+      scaleToFit(menuFrame.value, menuFrameContent.value, targetWidthMM, targetHeightMM);
+      scaleToFit(listsFrame.value, listsFrameContent.value, targetWidthMM, targetHeightMM);
     };
     const afterPrint = () => {
-      clearScale(menuSection.value);
-      clearScale(listsSection.value);
+      clearScale(menuFrame.value, menuFrameContent.value);
+      clearScale(listsFrame.value, listsFrameContent.value);
     };
     const regenerate = async () => {
       if (loading.value) return;
@@ -172,7 +205,7 @@ export default defineComponent({
         else if (mql.removeEventListener) mql.removeEventListener('change', mqlHandler);
       }
     });
-    return { weeks, normalizedWeeks, days, flatRecipes, regenerate, loading, generatedAt, formattedGeneratedAt, menuSection, listsSection };
+  return { weeks, normalizedWeeks, days, flatRecipes, regenerate, loading, generatedAt, formattedGeneratedAt, menuFrame, listsFrame, menuFrameContent, listsFrameContent };
   }
 });
 </script>
@@ -206,6 +239,9 @@ export default defineComponent({
   /* Force exactly two pages without blank middle */
   .menu-section { page-break-after: always; }
   .lists-section { page-break-after: auto; page-break-before: avoid; }
+  /* Frame centering and sizing */
+  .print-frame { margin: 0 auto; display:block; position:relative; break-inside: avoid; page-break-inside: avoid; }
+  .print-frame-content { transform-origin: top left; }
   /* Grids */
   .menu-grid { grid-template-columns: repeat(5, 1fr); }
   .shopping-grid { grid-template-columns: repeat(4, 1fr); }

@@ -106,7 +106,7 @@
 </template>
 
 <script>
-import { defineComponent, inject, ref } from 'vue';
+import { defineComponent, inject } from 'vue';
 import { auth, db } from '@/plugins/firebase.js';
 
 export default defineComponent({
@@ -124,8 +124,7 @@ export default defineComponent({
   },
   setup(){
     const toast = inject('toast');
-    const importInput = ref(null);
-    return { toast, importInput };
+    return { toast };
   },
   created() {
     const user = auth.currentUser;
@@ -233,29 +232,36 @@ export default defineComponent({
     headerMap(cols){
       const map = {};
       cols.forEach((c, idx)=>{
-        const k = c.trim().toLowerCase();
-        if (['name','recipe'].includes(k)) map['name'] = idx;
-        else if (k==='book') map['book'] = idx;
+        const base = (c||'').replace(/^\uFEFF/, '').trim().toLowerCase();
+        const k = base.replace(/[\s_-]+/g,''); // remove spaces/underscores/hyphens
+        if (['name','recipe','recipename'].includes(k)) map['name'] = idx;
+        else if (['book','cookbook','source'].includes(k)) map['book'] = idx;
         else if (k==='ingredients') map['ingredients'] = idx;
         else if (k==='leftovers') map['leftovers'] = idx;
-        else if (k==='glutenfree' || k==='gluten_free' || k==='gluten free') map['glutenFree'] = idx;
-        else if (k==='marinaterequired' || k==='marinate_required' || k==='marinate required' || k==='marinade') map['marinateRequired'] = idx;
-        else if (k==='timeconsuming' || k==='time_consuming' || k==='time consuming') map['timeConsuming'] = idx;
+        else if (k==='glutenfree') map['glutenFree'] = idx;
+        else if (k==='marinaterequired' || k==='marinade') map['marinateRequired'] = idx;
+        else if (k==='timeconsuming') map['timeConsuming'] = idx;
       });
       return map;
     },
-    triggerImport(){ this.importInput && this.importInput.click(); },
+    triggerImport(){ if (this.$refs && this.$refs.importInput) this.$refs.importInput.click(); },
     async onImportFileChange(e){
       const file = e.target.files && e.target.files[0];
       if (!file) return;
       try {
         this.busyData = true;
-        const text = await file.text();
+        const raw = await file.text();
+        // Remove UTF-8 BOM if present
+        const text = raw.replace(/^\uFEFF/, '');
         const rows = this.parseCSV(text);
         if (!rows.length) { this.toast && this.toast({ type:'warn', title:'Import', message:'CSV is empty.' }); return; }
         const header = rows[0];
         const map = this.headerMap(header);
-        if (!map.name || !map.book) { this.toast && this.toast({ type:'error', title:'Import', message:'CSV must include name (or recipe) and book columns.' }); return; }
+        if (map.name == null || map.book == null) {
+          const hdrPreview = header.map(h=> (h||'').replace(/^\uFEFF/, '').trim()).join(', ');
+          this.toast && this.toast({ type:'error', title:'Import', message:'CSV must include name (or recipe) and book columns. Found: ' + hdrPreview });
+          return;
+        }
         // Build objects
         const items = rows.slice(1).map(r=> ({
           name: (r[map.name]||'').trim(),
@@ -303,7 +309,7 @@ export default defineComponent({
         this.toast && this.toast({ type:'error', title:'Import Failed', message: String(err && err.message || err) });
       } finally {
         this.busyData = false;
-        if (this.importInput) this.importInput.value = '';
+        if (this.$refs && this.$refs.importInput) this.$refs.importInput.value = '';
       }
     },
     async exportRecipesCsv(){
@@ -313,8 +319,8 @@ export default defineComponent({
         const allow = await db.collection('allow-users').doc(user.uid).get(); if(!allow.exists) throw new Error('Missing allow-users');
         const groupId = allow.data().groupId; const col = db.collection(`recipes-${groupId}`);
         const snap = await col.get();
-        const rows = [];
-        const header = ['name','book','ingredients','leftovers','glutenFree','marinateRequired','timeConsuming'];
+  const rows = [];
+  const header = ['name','book','ingredients','leftovers','glutenFree','marinateRequired','timeConsuming'];
         rows.push(header);
         snap.forEach(d=>{
           const r = d.data();
