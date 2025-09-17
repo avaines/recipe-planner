@@ -6,7 +6,7 @@
     "serve": "source ./.env && vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "emulate": "firebase emulators:start --only firestore,auth --import=firebase/dev-data --export-on-exit"
+    "emulate": "firebase emulators:start --only firestore,auth --export-on-exit --import firebase/dev-data"
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
