@@ -84,9 +84,11 @@ The project uses **Firebase** for hosting and database management (Firestore). Y
 4. **Configure Firebase Emulator (Optional for Local Development)**:
     You can run Firebase emulators for local development:
 
-    ```bash
-    firebase emulators:start
-    ```
+```bash
+firebase emulators:start --import=firebase/dev-data --export-on-exit
+# Or use the npm script
+npm run emulate
+```
 
 ### 4. Start the Development Server
 
