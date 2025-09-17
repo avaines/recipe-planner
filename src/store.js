@@ -126,11 +126,18 @@ const store = createStore({
           appData.id = doc.id;
           recipes.push(appData);
         });
-        if (recipes.length != 0) {
-          // Reuse recipes to reach the required number
-          while (recipes.length < requiredRecipes) {
-            recipes.push(...recipes.slice(0, requiredRecipes - recipes.length));
+        if (recipes.length !== 0) {
+          // Shuffle recipes so each regeneration changes order even with small datasets
+          for (let i = recipes.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [recipes[i], recipes[j]] = [recipes[j], recipes[i]];
           }
+          // Reuse (cycling) to reach the required number while preserving shuffled order pattern
+          let idx = 0;
+            while (recipes.length < requiredRecipes) {
+              recipes.push(recipes[idx % (snapshot.size) ]);
+              idx++;
+            }
         }
 
         context.commit('setWeekRecipes', { daysPerWeek, recipes });

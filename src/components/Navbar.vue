@@ -1,63 +1,29 @@
 <template>
-  <div id="app" class="col-md-12">
-    <div class="shadow">
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <router-link to="/" class="navbar-brand">Recipe Planner</router-link>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav_collapse" aria-controls="nav_collapse" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="nav_collapse">
-          <template v-if="user.loggedIn">
-            <ul class="navbar-nav me-auto">
-              <li class="nav-item">
-                <router-link to="/" class="nav-link">Create Menu</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/addRecipe" class="nav-link">Add Recipe</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/manageRecipes" class="nav-link">Manage Recipes</router-link>
-              </li>
-            </ul>
-
-            <ul class="navbar-nav ms-auto">
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="bi bi-list"></i>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                  <li>
-                    <router-link to="Profile" class="dropdown-item"><i class="bi bi-person"></i> {{user.data.displayName}}</router-link>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" @click="signOut">Sign out</a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </template>
-          <template v-else>
-            <ul class="navbar-nav ms-auto">
-              <li class="nav-item">
-                <router-link to="Login" class="nav-link">Login</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="Signup" class="nav-link">Register</router-link>
-              </li>
-            </ul>
-          </template>
-        </div>
-      </nav>
+  <nav class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between no-print">
+    <div class="flex items-center gap-2">
+      <router-link to="/" class="flex items-center gap-2 font-bold text-xl text-gray-800">
+        <span>Recipe Planner</span>
+      </router-link>
+      <div v-if="user.loggedIn" class="hidden md:flex items-center gap-5 ml-8 text-sm font-medium">
+        <router-link to="/menu" class="hover:text-blue-600" :class="{ 'text-blue-600': $route.path === '/menu' }">Menu</router-link>
+  <router-link to="/manage-recipes" class="hover:text-blue-600" :class="{ 'text-blue-600': $route.path === '/manage-recipes' && !$route.query.add }">Manage Recipes</router-link>
+  <router-link :to="{ path: '/manage-recipes', query: { add: '1' } }" class="hover:text-blue-600" :class="{ 'text-blue-600': $route.path === '/manage-recipes' && $route.query.add }">Add Recipe</router-link>
+      </div>
     </div>
-  </div>
+    <div class="flex items-center gap-3">
+      <button v-if="!user.loggedIn" @click="$router.push('/auth')" class="px-3 py-1.5 text-sm rounded border border-gray-300 hover:bg-gray-50">Sign In</button>
+      <!-- Removed separate Profile & Add buttons; username becomes profile link -->
+      <button v-if="$route.path === '/menu'" @click="handlePrint" class="px-3 py-1.5 text-sm rounded border border-gray-300 hover:bg-gray-50">Print Menu</button>
+  <router-link v-if="user.loggedIn && user.data" to="/profile" class="text-sm text-gray-600 hover:text-blue-600 font-medium">Hi, {{ user.data.displayName }}</router-link>
+      <button v-if="user.loggedIn" @click="signOut" class="px-3 py-1.5 text-sm rounded bg-red-500 text-white hover:bg-red-600">Logout</button>
+    </div>
+  </nav>
 </template>
 
 <script>
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 import { auth } from '@/plugins/firebase.js';
-import 'firebase/auth';
 
 export default defineComponent({
   setup() {
@@ -66,16 +32,19 @@ export default defineComponent({
 
     const signOut = () => {
       auth.signOut().then(() => {
-        auth.onAuthStateChanged(() => {
-          this.$router.push({ name: 'Login' });
-        });
+        // state managed via onAuthStateChanged already
+        if (window.location.pathname !== '/auth') {
+          window.location.href = '/auth';
+        }
       });
     };
 
-    return {
-      user,
-      signOut
-    };
+    const handlePrint = () => window.print();
+    return { user, signOut, handlePrint };
   }
 });
 </script>
+
+<style scoped>
+/* Tailwind handles styles; minimal overrides below */
+</style>

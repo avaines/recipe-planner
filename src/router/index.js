@@ -1,62 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { auth, db } from '@/plugins/firebase.js';
-import store from '../store';
-import Home from '../views/Home.vue';
-import Login from '../views/Login.vue';
-import Signup from '../views/Signup.vue';
+import { isAuthenticated, loading } from '@/stores/auth';
+
+// New UI Views (will be created/ported)
+import LandingHome from '../views/HomeLanding.vue';
+import AuthView from '../views/Auth.vue';
 import Profile from '../views/Profile.vue';
-import ForgotPassword from '../views/ForgotPassword.vue';
-import RecipesAdd from '../views/RecipesAdd.vue';
-import RecipesEdit from '../views/RecipesEdit.vue';
-import RecipesManage from '../views/RecipesManage.vue';
+import Menu from '../views/Menu.vue';
+import ManageRecipes from '../views/ManageRecipes.vue';
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/signup',
-    name: 'Signup',
-    component: Signup
-  },
-  {
-    path: '/profile',
-    name: 'Profile',
-    component: Profile,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/forgot-password',
-    name: 'ForgotPassword',
-    component: ForgotPassword,
-    meta: {title: 'Forgot Password'}
-  },
-  {
-    path: '/addRecipe',
-    name: 'AddRecipe',
-    component: RecipesAdd,
-    meta: { requiresAuth: true, title: 'Add Recipes' }
-  },
-  {
-    path: '/manageRecipes',
-    name: 'ManageRecipes',
-    component: RecipesManage,
-    meta: { requiresAuth: true, title: 'Manage Recipes' }
-  },
-  {
-    path: '/edit/:id',
-    name: 'Edit',
-    component: RecipesEdit,
-    meta: { requiresAuth: true, title: 'Edit Recipes' }
-  }
+  { path: '/', name: 'LandingHome', component: LandingHome },
+  { path: '/auth', name: 'Auth', component: AuthView },
+  { path: '/menu', name: 'Menu', component: Menu, meta: { requiresAuth: true } },
+  { path: '/profile', name: 'Profile', component: Profile, meta: { requiresAuth: true } },
+  { path: '/manage-recipes', name: 'ManageRecipes', component: ManageRecipes, meta: { requiresAuth: true } },
+  // Legacy routes redirecting
+  { path: '/login', redirect: '/auth' },
+  { path: '/signup', redirect: '/auth' },
+  { path: '/addRecipe', redirect: '/manage-recipes' },
+  { path: '/manageRecipes', redirect: '/manage-recipes' }
 ];
 
 const router = createRouter({
@@ -64,35 +26,23 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+router.beforeEach(async (to, from, next) => {
+  // Wait for reactive auth initialization
+  if (loading.value) {
+    await new Promise(resolve => {
+      const check = () => { if (!loading.value) resolve(); else setTimeout(check, 50); };
+      check();
+    });
+  }
+  const requiresAuth = to.matched.some(r => r.meta.requiresAuth);
 
-  auth.onAuthStateChanged(async (user) => {
-    if (requiresAuth && user) {
-      try {
-        const doc = await db.collection('allow-users').doc(user.uid).get();
-        if (doc.exists && doc.data().enabled) {
-          next();
-        } else {
-          alert('Your account is not enabled. Please contact support.');
-          await auth.signOut();
-          store.commit('SET_LOGGED_IN', false);
-          store.commit('SET_USER', null);
-          next({ name: 'Login' });
-        }
-      } catch (error) {
-        console.error("Error checking user enabled status: ", error);
-        await auth.signOut();
-        store.commit('SET_LOGGED_IN', false);
-        store.commit('SET_USER', null);
-        next({ name: 'Login' });
-      }
-    } else if (requiresAuth && !user) {
-      next({ name: 'Login' });
-    } else {
-      next();
-    }
-  });
+  if (requiresAuth && !isAuthenticated.value) {
+    return next('/auth');
+  }
+  if (to.path === '/auth' && isAuthenticated.value) {
+    return next('/menu');
+  }
+  next();
 });
 
 export default router;
