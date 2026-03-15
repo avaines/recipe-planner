@@ -52,6 +52,7 @@
             type="text"
             v-model="comp.name"
             @input="emitUpdate"
+            @blur="handleComponentNameBlur(ci)"
             placeholder="Component name (e.g. Mashed Potatoes)"
             class="flex-1 border rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -85,6 +86,7 @@
               type="text"
               v-model="ing.item"
               @input="emitUpdate"
+              @blur="handleIngredientItemBlur(ci, ii)"
               @keydown.enter.prevent="handleIngredientEnter(ci, ii)"
               :ref="(el) => setIngredientItemRef(ci, ii, el)"
               placeholder="e.g. 1 cup flour"
@@ -133,6 +135,7 @@
                   type="text"
                   v-model="step.action"
                   @input="emitUpdate"
+                  @blur="handleStepActionBlur(ci, si)"
                   placeholder="e.g. mix together"
                   class="w-full border rounded px-2 py-1.5 text-sm mb-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
                 />
@@ -164,14 +167,37 @@
                   </label>
                 </div>
               </div>
-              <button
-                type="button"
-                @click="removeStep(ci, si)"
-                class="text-red-400 hover:text-red-600 px-1 mt-1 shrink-0"
-                aria-label="Remove step"
-              >
-                <i class="pi pi-times"></i>
-              </button>
+              <div class="flex flex-col gap-1 mt-1 shrink-0">
+                <button
+                  type="button"
+                  @click="moveStepUp(ci, si)"
+                  :disabled="si === 0"
+                  class="inline-flex items-center justify-center h-7 w-7 rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 disabled:text-gray-300 disabled:border-gray-100"
+                  aria-label="Move step up"
+                  title="Move up"
+                >
+                  <i class="bi bi-arrow-up-short text-base leading-none" aria-hidden="true"></i>
+                </button>
+                <button
+                  type="button"
+                  @click="moveStepDown(ci, si)"
+                  :disabled="si === comp.steps.length - 1"
+                  class="inline-flex items-center justify-center h-7 w-7 rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 disabled:text-gray-300 disabled:border-gray-100"
+                  aria-label="Move step down"
+                  title="Move down"
+                >
+                  <i class="bi bi-arrow-down-short text-base leading-none" aria-hidden="true"></i>
+                </button>
+                <button
+                  type="button"
+                  @click="removeStep(ci, si)"
+                  class="inline-flex items-center justify-center h-7 w-7 rounded border border-red-200 bg-white text-red-600 hover:bg-red-50"
+                  aria-label="Remove step"
+                  title="Delete"
+                >
+                  <i class="bi bi-x text-base leading-none" aria-hidden="true"></i>
+                </button>
+              </div>
             </div>
           </div>
           <p v-if="comp.steps.length === 0" class="text-xs text-gray-400 italic">No steps yet.</p>
@@ -262,6 +288,86 @@ export default defineComponent({
 
     const emitUpdate = () => emit('update:modelValue', buildCleanRecipe());
 
+    const toTitleCase = (value) => {
+      if (!value || typeof value !== 'string') return value;
+      return value
+        .trim()
+        .replace(/\s+/g, ' ')
+        .split(' ')
+        .map(word => {
+          if (!word) return word;
+          return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        })
+        .join(' ');
+    };
+
+    const ingredientLowercaseWords = new Set([
+      'g', 'kg', 'mg', 'ml', 'l',
+      'tsp', 'tbsp', 'oz', 'lb', 'lbs',
+      'cm', 'mm'
+    ]);
+
+    const toIngredientTitleCase = (value) => {
+      if (!value || typeof value !== 'string') return value;
+      return value
+        .trim()
+        .replace(/\s+/g, ' ')
+        .split(' ')
+        .map(word => {
+          if (!word) return word;
+
+          const parts = word.match(/^([^A-Za-z0-9]*)([A-Za-z0-9.]+)([^A-Za-z0-9]*)$/);
+          if (!parts) return word;
+
+          const [, prefix, core, suffix] = parts;
+          const normalizedCore = core.toLowerCase();
+
+          if (ingredientLowercaseWords.has(normalizedCore)) {
+            return `${prefix}${normalizedCore}${suffix}`;
+          }
+
+          return `${prefix}${core.charAt(0).toUpperCase()}${core.slice(1).toLowerCase()}${suffix}`;
+        })
+        .join(' ');
+    };
+
+    const toSentenceCase = (value) => {
+      if (!value || typeof value !== 'string') return value;
+      const normalized = value.trim().replace(/\s+/g, ' ');
+      if (!normalized) return normalized;
+      return normalized.charAt(0).toUpperCase() + normalized.slice(1).toLowerCase();
+    };
+
+    const handleIngredientItemBlur = (ci, ii) => {
+      const ingredient = local.components?.[ci]?.ingredients?.[ii];
+      if (!ingredient) return;
+      const titleCased = toIngredientTitleCase(ingredient.item);
+      if (titleCased !== ingredient.item) {
+        ingredient.item = titleCased;
+      }
+      emitUpdate();
+    };
+
+    const handleComponentNameBlur = (ci) => {
+      const component = local.components?.[ci];
+      if (!component) return;
+      const titleCased = toTitleCase(component.name);
+      if (titleCased !== component.name) {
+        component.name = titleCased;
+      }
+      emitUpdate();
+    };
+
+    const handleStepActionBlur = (ci, si) => {
+      const step = local.components?.[ci]?.steps?.[si];
+      if (!step) return;
+      const sentenceCased = toSentenceCase(step.action);
+      if (sentenceCased !== step.action) {
+        step.action = sentenceCased;
+      }
+      emitUpdate();
+    };
+
     const addComponent = () => {
       local.components.push({
         _id: idCounter++,
@@ -319,6 +425,32 @@ export default defineComponent({
       emitUpdate();
     };
 
+    const moveStepUp = (ci, si) => {
+      if (si <= 0) return;
+      const steps = local.components?.[ci]?.steps;
+      if (!steps) return;
+      [steps[si - 1], steps[si]] = [steps[si], steps[si - 1]];
+      emitUpdate();
+    };
+
+    const moveStepDown = (ci, si) => {
+      const steps = local.components?.[ci]?.steps;
+      if (!steps || si >= steps.length - 1) return;
+      [steps[si], steps[si + 1]] = [steps[si + 1], steps[si]];
+      emitUpdate();
+    };
+
+    const duplicateStep = (ci, si) => {
+      const steps = local.components?.[ci]?.steps;
+      const step = steps?.[si];
+      if (!steps || !step) return;
+      steps.splice(si + 1, 0, {
+        action: step.action,
+        rows: [...(step.rows || [])]
+      });
+      emitUpdate();
+    };
+
     const toggleStepRow = (ci, si, rowIndex, checked) => {
       const step = local.components[ci].steps[si];
       if (checked) {
@@ -350,12 +482,18 @@ export default defineComponent({
       emitUpdate,
       addComponent,
       removeComponent,
+      handleComponentNameBlur,
       addIngredient,
       handleIngredientEnter,
+      handleIngredientItemBlur,
       setIngredientItemRef,
       removeIngredient,
       addStep,
       removeStep,
+      moveStepUp,
+      moveStepDown,
+      duplicateStep,
+      handleStepActionBlur,
       toggleStepRow,
       selectAllStepRows
     };
