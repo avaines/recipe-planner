@@ -127,7 +127,7 @@ The app is deployed to **Firebase Hosting** under the domain `recipe.vaines.org`
 1. **Deploy to Firebase Hosting**:
 
    ```bash
-   firebase deploy --only hosting
+    firebase deploy --only hosting,firestore:rules,firestore:indexes
    ```
 
 2. After deploying, the app will be live at [https://recipe.vaines.org](https://recipe.vaines.org).
