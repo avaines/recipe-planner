@@ -18,24 +18,44 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <div v-for="r in filtered" :key="r.id" class="group recipe-management-card bg-white border border-gray-200 rounded-lg shadow overflow-hidden flex flex-col cursor-pointer"
              @click="edit(r)" @keydown.enter.prevent="edit(r)" tabindex="0" role="button" :aria-label="'Edit ' + (r.recipe || r.name)">
-          <div class="flex justify-end p-2 border-b border-gray-100 z-10 relative">
-            <button @click.stop="edit(r)" class="text-gray-500 hover:text-blue-600 p-2" aria-label="Edit"><i class="pi pi-pencil"></i></button>
-            <button @click.stop="remove(r)" class="text-gray-500 hover:text-red-600 p-2" aria-label="Delete"><i class="pi pi-trash"></i></button>
+          <!-- Card header: title + action icons -->
+          <div class="flex items-center justify-between gap-2 px-3 py-2 border-b border-gray-100 z-10 relative">
+            <div class="min-w-0">
+              <h3 class="font-semibold text-sm text-gray-800 truncate group-hover:text-blue-600 transition-colors" :title="r.recipe || r.name">{{ r.recipe || r.name }}</h3>
+              <p class="text-xs text-gray-400 truncate">{{ r.book }}</p>
+            </div>
+            <div class="flex items-center shrink-0">
+              <router-link
+                v-if="instructionsMap[r.id]"
+                :to="`/recipe-instructions/${instructionsMap[r.id].id}/view`"
+                class="text-gray-400 hover:text-purple-600 p-1.5"
+                title="View Instructions" aria-label="View Instructions"
+                @click.stop
+              ><i class="pi pi-book"></i></router-link>
+              <router-link
+                v-else
+                :to="{ path: '/recipe-instructions/new', query: { linkedRecipeId: r.id, name: r.recipe || r.name } }"
+                class="text-gray-400 hover:text-green-600 p-1.5"
+                title="Add Instructions" aria-label="Add Instructions"
+                @click.stop
+              ><i class="pi pi-plus-circle"></i></router-link>
+              <button @click.stop="edit(r)" class="text-gray-400 hover:text-blue-600 p-1.5" aria-label="Edit"><i class="pi pi-pencil"></i></button>
+              <button @click.stop="remove(r)" class="text-gray-400 hover:text-red-600 p-1.5" aria-label="Delete"><i class="pi pi-trash"></i></button>
+            </div>
           </div>
+          <!-- Card body -->
           <div class="p-4 flex-1 flex flex-col">
-            <h3 class="font-semibold text-lg mb-1 group-hover:text-blue-600 transition-colors">{{ r.recipe || r.name }}</h3>
-            <p class="text-sm text-gray-500 mb-3">{{ r.book }}</p>
-            <div class="mb-4">
+            <div>
+              <h4 class="font-semibold mb-1 text-sm">Ingredients:</h4>
+              <p class="text-xs text-gray-500 leading-relaxed">{{ (Array.isArray(r.ingredients)? r.ingredients : r.ingredients.split(',')).join(', ') }}</p>
+            </div>
+            <div v-if="r.leftovers || r.glutenFree || r.marinateRequired || r.marinade || r.timeConsuming" class="mt-auto pt-3 border-t border-gray-100">
               <div class="flex flex-wrap gap-2 text-xs uppercase tracking-wide">
                 <span v-if="r.leftovers" class="badge badge-info">Leftovers</span>
                 <span v-if="r.glutenFree" class="badge badge-success">Gluten Free</span>
                 <span v-if="r.marinateRequired || r.marinade" class="badge badge-warning">Marinade</span>
                 <span v-if="r.timeConsuming" class="badge badge-danger">Time Consuming</span>
               </div>
-            </div>
-            <div class="mt-auto">
-              <h4 class="font-semibold mb-2 text-sm">Ingredients:</h4>
-              <p class="text-sm text-gray-600 leading-relaxed">{{ (Array.isArray(r.ingredients)? r.ingredients : r.ingredients.split(',')).join(', ') }}</p>
             </div>
           </div>
         </div>
@@ -85,11 +105,21 @@
               <label class="flex items-center gap-2"><input type="checkbox" v-model="form.marinateRequired" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" /> <span>Requires Marinade</span></label>
               <label class="flex items-center gap-2"><input type="checkbox" v-model="form.timeConsuming" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" /> <span>Time Consuming</span></label>
             </div>
+            <!-- Optional: also create instructions (only shown when adding a new recipe) -->
+            <div v-if="!editing" class="border border-dashed border-blue-200 rounded-lg px-4 py-3 bg-blue-50">
+              <label class="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" v-model="addInstructionsAfter" class="h-4 w-4 mt-0.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                <div>
+                  <span class="text-sm font-medium text-blue-800">Also add recipe instructions</span>
+                  <p class="text-xs text-blue-600 mt-0.5">After saving, you'll be taken to the instructions builder to add step-by-step cooking instructions. This is optional and can be done later.</p>
+                </div>
+              </label>
+            </div>
             <div class="flex justify-between items-center gap-3 pt-2">
               <button v-if="editing && currentRecipe" type="button" @click="remove(currentRecipe)" class="inline-flex items-center px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white font-medium"><i class="pi pi-trash mr-2"></i>Delete</button>
               <div class="ml-auto flex gap-3">
                 <button type="button" @click="close" class="inline-flex items-center px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50">Cancel</button>
-                <button type="submit" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium">{{ editing ? 'Save Changes' : 'Add Recipe' }}</button>
+                <button type="submit" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium">{{ editing ? 'Save Changes' : (addInstructionsAfter ? 'Save & Add Instructions →' : 'Add Recipe') }}</button>
               </div>
             </div>
           </form>
@@ -100,7 +130,7 @@
 </template>
 <script>
 import { defineComponent, ref, reactive, computed, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { auth, db } from '@/plugins/firebase';
 
 export default defineComponent({
@@ -108,10 +138,14 @@ export default defineComponent({
   setup(){
   const search = ref('');
   const route = useRoute();
+  const router = useRouter();
     const recipes = ref([]);
     const dialog = ref(false);
     const editing = ref(false);
     const currentId = ref(null);
+    const addInstructionsAfter = ref(false);
+    // Map: recipeId -> instruction document (for recipes that have linked instructions)
+    const instructionsMap = ref({});
   const form = reactive({ name:'', book:'', leftovers:false, glutenFree:false, marinateRequired:false, timeConsuming:false });
   const ingredientInput = ref('');
   const ingredientsList = ref([]);
@@ -126,6 +160,16 @@ export default defineComponent({
       const groupId = allow.data().groupId; const collection = `recipes-${groupId}`;
       const snap = await db.collection(collection).get();
       recipes.value = snap.docs.map(d=> ({ id:d.id, ...d.data() }));
+      // Load instructions and build a map from linkedRecipeId -> instruction
+      try {
+        const instrSnap = await db.collection(`recipe-instructions-${groupId}`).get();
+        const map = {};
+        instrSnap.docs.forEach(d => {
+          const data = d.data();
+          if (data.linkedRecipeId) map[data.linkedRecipeId] = { id: d.id, ...data };
+        });
+        instructionsMap.value = map;
+      } catch (_) { /* instructions collection may not exist yet */ }
     };
 
     const filtered = computed(()=> recipes.value.filter(r => {
@@ -148,11 +192,11 @@ export default defineComponent({
       }
       ingredientField.value && ingredientField.value.focus();
     };
-    const beginIngredientEdit = (idx, ing) => { editingIngredient.value = idx; editingValue.value = ing; }; 
+    const beginIngredientEdit = (idx, ing) => { editingIngredient.value = idx; editingValue.value = ing; };
     const commitIngredient = (idx) => { const val = normalise(editingValue.value); if(!val) { cancelIngredient(); return;} ingredientsList.value[idx] = val; cancelIngredient(); };
     const cancelIngredient = () => { editingIngredient.value = null; editingValue.value=''; };
     const removeIngredient = (idx) => { ingredientsList.value.splice(idx,1); };
-    const openAdd = () => { editing.value=false; currentId.value=null; Object.assign(form,{ name:'', book:'', leftovers:false, glutenFree:false, marinateRequired:false, timeConsuming:false }); ingredientsList.value=[]; ingredientInput.value=''; dialog.value=true; setTimeout(()=> ingredientField.value && ingredientField.value.focus(), 50); };
+    const openAdd = () => { editing.value=false; currentId.value=null; addInstructionsAfter.value=false; Object.assign(form,{ name:'', book:'', leftovers:false, glutenFree:false, marinateRequired:false, timeConsuming:false }); ingredientsList.value=[]; ingredientInput.value=''; dialog.value=true; setTimeout(()=> ingredientField.value && ingredientField.value.focus(), 50); };
   const edit = (r) => { editing.value=true; currentId.value=r.id; Object.assign(form,{ name:r.name||r.recipe, book:r.book||'', leftovers:!!r.leftovers, glutenFree:!!r.glutenFree, marinateRequired:!!(r.marinateRequired||r.marinade), timeConsuming:!!r.timeConsuming }); const ingArr = Array.isArray(r.ingredients)? r.ingredients : r.ingredients.split(','); ingredientsList.value = ingArr.map(i=> normalise(i)); ingredientInput.value=''; editingIngredient.value=null; editingValue.value=''; dialog.value=true; setTimeout(()=> ingredientField.value && ingredientField.value.focus(), 50); };
     const remove = async (r) => { if(!confirm('Delete recipe?')) return; const user = auth.currentUser; if(!user) return; const allow = await db.collection('allow-users').doc(user.uid).get(); const groupId = allow.data().groupId; await db.collection(`recipes-${groupId}`).doc(r.id).delete(); recipes.value = recipes.value.filter(x=> x.id!==r.id); };
     const close = () => { dialog.value=false; };
@@ -160,9 +204,17 @@ export default defineComponent({
       const user = auth.currentUser; if(!user) return; const allow = await db.collection('allow-users').doc(user.uid).get(); const groupId = allow.data().groupId; const collection = db.collection(`recipes-${groupId}`);
       const ingredients = ingredientsList.value;
       const data = { name: form.name, book: form.book, ingredients: ingredients.join(', '), leftovers: form.leftovers, glutenFree: form.glutenFree, marinateRequired: form.marinateRequired, timeConsuming: form.timeConsuming };
-      if(editing.value && currentId.value){ await collection.doc(currentId.value).update(data); const idx = recipes.value.findIndex(r=> r.id===currentId.value); if(idx>-1) recipes.value[idx] = { id: currentId.value, ...data }; }
-      else { const docRef = await collection.add(data); recipes.value.unshift({ id: docRef.id, ...data }); }
-      close();
+      if(editing.value && currentId.value){ await collection.doc(currentId.value).update(data); const idx = recipes.value.findIndex(r=> r.id===currentId.value); if(idx>-1) recipes.value[idx] = { id: currentId.value, ...data }; close(); }
+      else {
+        const docRef = await collection.add(data);
+        recipes.value.unshift({ id: docRef.id, ...data });
+        if (addInstructionsAfter.value) {
+          close();
+          router.push({ path: '/recipe-instructions/new', query: { linkedRecipeId: docRef.id, name: form.name } });
+          return;
+        }
+        close();
+      }
     };
 
     onMounted(()=> {
@@ -180,7 +232,7 @@ export default defineComponent({
         // optional: ignore
       }
     });
-  return { search, recipes, filtered, dialog, editing, form, ingredientInput, ingredientsList, ingredientField, addIngredient, beginIngredientEdit, commitIngredient, cancelIngredient, removeIngredient, editingIngredient, editingValue, openAdd, edit, remove, close, save, currentRecipe, currentId };
+  return { search, recipes, filtered, dialog, editing, form, ingredientInput, ingredientsList, ingredientField, addIngredient, beginIngredientEdit, commitIngredient, cancelIngredient, removeIngredient, editingIngredient, editingValue, openAdd, edit, remove, close, save, currentRecipe, currentId, instructionsMap, addInstructionsAfter };
   }
 });
 </script>

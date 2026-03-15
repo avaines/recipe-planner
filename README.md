@@ -142,7 +142,7 @@ GitHub Actions are set up to automatically deploy the app when changes are pushe
 
 Here’s an overview of the project structure:
 
-```
+```text
 recipe.vaines.org/
 ├── .github/
 │   └── workflows/
@@ -167,6 +167,7 @@ recipe.vaines.org/
 Here’s an overview of the project Firestore table structure:
 
 ### Collection: 'allow-users'
+
 Stores the IDs of valid users, its very lazy but works sufficiently to gatekeep this currently given its only me and my partner who need access
 
 | Document | Fields |
@@ -174,6 +175,7 @@ Stores the IDs of valid users, its very lazy but works sufficiently to gatekeep 
 | *Firebase Authentication Identifier*  | displayName: 'my user',<br>email:'myuser@domain.com',<br>enabled:true,<br>,groupId:'{uuid}' |
 
 ### Collection: 'recipies-${groupId}'
+
 The groupID is a UUID assigned to each user at registration
 to support sharing/collaboration a user can change their groupId to match someone elses when shared allowing two or more to share the same set of recipies in the collection
 Stores the recipe data

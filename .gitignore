@@ -27,4 +27,5 @@ firebase-debug.log
 
 # Backups
 firestore-backup/
+firebase-export-*/
 firestore-manual-backup/

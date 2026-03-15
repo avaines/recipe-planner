@@ -70,4 +70,3 @@ html.dark { color-scheme: dark; }
   nav, footer { display:none !important; }
 }
 </style>
-

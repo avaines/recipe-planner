@@ -7,6 +7,9 @@ import AuthView from '../views/Auth.vue';
 import Profile from '../views/Profile.vue';
 import Menu from '../views/Menu.vue';
 import ManageRecipes from '../views/ManageRecipes.vue';
+import RecipeInstructionsManage from '../views/RecipeInstructionsManage.vue';
+import RecipeInstructionEdit from '../views/RecipeInstructionEdit.vue';
+import RecipeInstructionView from '../views/RecipeInstructionView.vue';
 
 const routes = [
   { path: '/', name: 'LandingHome', component: LandingHome },
@@ -14,6 +17,11 @@ const routes = [
   { path: '/menu', name: 'Menu', component: Menu, meta: { requiresAuth: true } },
   { path: '/profile', name: 'Profile', component: Profile, meta: { requiresAuth: true } },
   { path: '/manage-recipes', name: 'ManageRecipes', component: ManageRecipes, meta: { requiresAuth: true } },
+  // Recipe Instructions
+  { path: '/recipe-instructions', name: 'RecipeInstructionsManage', component: RecipeInstructionsManage, meta: { requiresAuth: true } },
+  { path: '/recipe-instructions/new', name: 'RecipeInstructionNew', component: RecipeInstructionEdit, meta: { requiresAuth: true } },
+  { path: '/recipe-instructions/:id/edit', name: 'RecipeInstructionEdit', component: RecipeInstructionEdit, meta: { requiresAuth: true } },
+  { path: '/recipe-instructions/:id/view', name: 'RecipeInstructionView', component: RecipeInstructionView, meta: { requiresAuth: true } },
   // Legacy routes redirecting
   { path: '/login', redirect: '/auth' },
   { path: '/signup', redirect: '/auth' },

@@ -26,5 +26,9 @@ service cloud.firestore {
     match /{recipesGroupId}/{document=**} {
       allow create, read, write, delete: if isSignedIn() && isAllowedUser() && ("recipes-" + getGroupId()) == recipesGroupId
     }
+
+    match /{instructionsGroupId}/{document=**} {
+      allow create, read, write, delete: if isSignedIn() && isAllowedUser() && ("recipe-instructions-" + getGroupId()) == instructionsGroupId
+    }
   }
 }
