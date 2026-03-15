@@ -192,7 +192,7 @@ export default defineComponent({
         router.push('/recipe-instructions');
       } catch (err) {
         console.error('Error saving instruction:', err);
-        alert('Failed to save. Please try again.');
+        alert(`Failed to save: ${err?.message || 'Please try again.'}`);
       } finally {
         saving.value = false;
       }
@@ -207,7 +207,7 @@ export default defineComponent({
         router.push('/recipe-instructions');
       } catch (err) {
         console.error('Error deleting instruction:', err);
-        alert('Failed to delete. Please try again.');
+        alert(`Failed to delete: ${err?.message || 'Please try again.'}`);
       } finally {
         saving.value = false;
       }

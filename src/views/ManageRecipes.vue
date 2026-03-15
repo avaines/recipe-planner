@@ -169,7 +169,9 @@ export default defineComponent({
           if (data.linkedRecipeId) map[data.linkedRecipeId] = { id: d.id, ...data };
         });
         instructionsMap.value = map;
-      } catch (_) { /* instructions collection may not exist yet */ }
+      } catch (err) {
+        console.error('Error loading recipe instructions:', err);
+      }
     };
 
     const filtered = computed(()=> recipes.value.filter(r => {
