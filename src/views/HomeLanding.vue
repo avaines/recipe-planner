@@ -18,7 +18,7 @@
           </button>
         </div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
         <div class="text-center h-full bg-white rounded-lg shadow p-6 flex flex-col">
           <i class="pi pi-calendar text-5xl text-blue-500 mb-4"></i>
             <h3 class="text-xl font-semibold mb-3">Weekly Menu Planning</h3>
@@ -43,10 +43,18 @@
               tags like gluten-free, leftovers, marinade required, and time-consuming.
             </p>
         </div>
+        <div class="text-center h-full bg-white rounded-lg shadow p-6 flex flex-col">
+          <i class="pi pi-list text-5xl text-purple-500 mb-4"></i>
+            <h3 class="text-xl font-semibold mb-3">Step-by-Step Instructions</h3>
+            <p class="text-gray-600 leading-relaxed flex-1">
+              Optionally build visual cooking instructions for any recipe — ingredients,
+              prep steps, and actions laid out in a clear table you can print and use in the kitchen.
+            </p>
+        </div>
       </div>
       <div class="bg-gray-50 rounded-lg p-8">
         <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">How It Works</h2>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
           <div class="text-center" v-for="step in steps" :key="step.number">
             <div :class="['rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4', step.bg]">
               <span :class="['text-2xl font-bold', step.color]">{{ step.number }}</span>
@@ -69,7 +77,8 @@ export default defineComponent({
       { number: 1, title: 'Add Recipes', text: 'Input your favorite recipes with ingredients and special requirements.', bg: 'bg-blue-100', color: 'text-blue-600' },
       { number: 2, title: 'Plan Menu', text: 'View your 4-week menu with randomly selected recipes for each weekday.', bg: 'bg-green-100', color: 'text-green-600' },
       { number: 3, title: 'Generate Lists', text: 'Get organized shopping lists for each week automatically.', bg: 'bg-orange-100', color: 'text-orange-600' },
-      { number: 4, title: 'Print & Shop', text: 'Print your menu and shopping lists for easy reference.', bg: 'bg-purple-100', color: 'text-purple-600' }
+      { number: 4, title: 'Print & Shop', text: 'Print your menu and shopping lists for easy reference.', bg: 'bg-purple-100', color: 'text-purple-600' },
+      { number: 5, title: 'Add Instructions', text: 'Optionally build step-by-step visual cooking instructions and print them for the kitchen.', bg: 'bg-pink-100', color: 'text-pink-600' }
     ];
     return { steps, isAuthenticated };
   }

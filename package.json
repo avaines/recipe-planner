@@ -6,7 +6,7 @@
     "serve": "source ./.env && vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "emulate": "firebase emulators:start --only firestore,auth --export-on-exit --import firebase/dev-data"
+    "emulate": "NODE_OPTIONS=--no-deprecation firebase emulators:start --only firestore,auth --export-on-exit --import firebase/dev-data"
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
@@ -23,6 +23,7 @@
     "vuex": "^4.0.0"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.25.0",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/typography": "^0.5.12",
@@ -30,11 +31,11 @@
     "@vue/cli-plugin-eslint": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
     "@vue/compiler-sfc": "^3.5.13",
-    "@babel/eslint-parser": "^7.25.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.29.0",
     "postcss": "^8.4.47",
+    "punycode": "^2.3.1",
     "tailwindcss": "^3.4.13"
   },
   "eslintConfig": {
@@ -47,8 +48,8 @@
       "eslint:recommended"
     ],
     "parserOptions": {
-    "parser": "@babel/eslint-parser",
-    "requireConfigFile": false
+      "parser": "@babel/eslint-parser",
+      "requireConfigFile": false
     },
     "rules": {
       "no-console": 0,
