@@ -200,7 +200,23 @@ export default defineComponent({
     const removeIngredient = (idx) => { ingredientsList.value.splice(idx,1); };
     const openAdd = () => { editing.value=false; currentId.value=null; addInstructionsAfter.value=false; Object.assign(form,{ name:'', book:'', leftovers:false, glutenFree:false, marinateRequired:false, timeConsuming:false }); ingredientsList.value=[]; ingredientInput.value=''; dialog.value=true; setTimeout(()=> ingredientField.value && ingredientField.value.focus(), 50); };
   const edit = (r) => { editing.value=true; currentId.value=r.id; Object.assign(form,{ name:r.name||r.recipe, book:r.book||'', leftovers:!!r.leftovers, glutenFree:!!r.glutenFree, marinateRequired:!!(r.marinateRequired||r.marinade), timeConsuming:!!r.timeConsuming }); const ingArr = Array.isArray(r.ingredients)? r.ingredients : r.ingredients.split(','); ingredientsList.value = ingArr.map(i=> normalise(i)); ingredientInput.value=''; editingIngredient.value=null; editingValue.value=''; dialog.value=true; setTimeout(()=> ingredientField.value && ingredientField.value.focus(), 50); };
-    const remove = async (r) => { if(!confirm('Delete recipe?')) return; const user = auth.currentUser; if(!user) return; const allow = await db.collection('allow-users').doc(user.uid).get(); const groupId = allow.data().groupId; await db.collection(`recipes-${groupId}`).doc(r.id).delete(); recipes.value = recipes.value.filter(x=> x.id!==r.id); };
+    const remove = async (r) => {
+      if (!confirm('Are you sure you want to delete this recipe?')) return;
+      const user = auth.currentUser;
+      if (!user) return;
+      const allow = await db.collection('allow-users').doc(user.uid).get();
+      const groupId = allow.data().groupId;
+
+      await db.collection(`recipes-${groupId}`).doc(r.id).delete();
+      recipes.value = recipes.value.filter(x => x.id !== r.id);
+
+      // If we're currently editing this recipe, close the modal.
+      if (editing.value) {
+        dialog.value = false;
+        editing.value = false;
+        currentId.value = null;
+      }
+    };
     const close = () => { dialog.value=false; };
     const save = async () => {
       const user = auth.currentUser; if(!user) return; const allow = await db.collection('allow-users').doc(user.uid).get(); const groupId = allow.data().groupId; const collection = db.collection(`recipes-${groupId}`);
