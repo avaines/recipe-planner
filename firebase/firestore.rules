@@ -30,5 +30,12 @@ service cloud.firestore {
     match /{instructionsGroupId}/{document=**} {
       allow create, read, write, delete: if isSignedIn() && isAllowedUser() && ("recipe-instructions-" + getGroupId()) == instructionsGroupId
     }
+
+    match /{menusGroupId}/{menuDocId} {
+      // Public read access is limited to the single saved-menu document for UUID-style group collections.
+      allow get: if menusGroupId.matches('^menus-[0-9a-fA-F-]{36}$') && menuDocId == 'current';
+      allow list: if false;
+      allow create, write, delete: if isSignedIn() && isAllowedUser() && ("menus-" + getGroupId()) == menusGroupId;
+    }
   }
 }

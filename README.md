@@ -2,7 +2,7 @@
 
 **Recipe Vaines** is an online app that helps you organize your kitchen recipes and generate a monthly menu for your family. It includes a list of all the recipes in your kitchen along with the ingredients required, and helps create a daily tea-time menu so you always know what's for dinner!
 
-The app is built with **Vue.js 2**, hosted on **Firebase**, and utilizes **Firestore** for database management.
+The app is built with **Vue 3**, hosted on **Firebase**, and uses **Firestore** for database management.
 
 ---
 
@@ -29,7 +29,7 @@ To set up the project locally and start contributing, follow these steps:
 
 ### Prerequisites
 
-- **Node.js** (v16+ recommended)
+- **Node.js** (v22 recommended)
 - **npm** (or **yarn**)
 
 ### 1. Clone the Repository
@@ -70,7 +70,7 @@ The project uses **Firebase** for hosting and database management (Firestore). Y
     ```
 
 3. **Setup Firebase**:
-   Run the following command to initialize Firebase and set up your project:
+    Run the following command to initialize Firebase and set up your project:
 
     ```bash
     firebase init
@@ -79,18 +79,17 @@ The project uses **Firebase** for hosting and database management (Firestore). Y
     Choose the following during initialization:
     - Firestore for the database
     - Firebase Hosting for deployment
-    - Functions (optional, if you need backend functions)
 
 4. **Configure Firebase Emulator (Optional for Local Development)**:
     You can run Firebase emulators for local development:
 
 ```bash
-firebase emulators:start --import=firebase/dev-data --export-on-exit
+firebase emulators:start --only firestore,auth --import=firebase/dev-data --export-on-exit
 # Or use the npm script
 npm run emulate
 ```
 
-### 4. Start the Development Server
+### 5. Start the Development Server
 
 Once everything is set up, run the following command to start the local development server:
 
@@ -100,7 +99,7 @@ npm run serve
 
 This will start the Vue.js app locally at `http://localhost:8080`.
 
-### 5. Build for Production
+### 6. Build for Production
 
 To build the project for production, run:
 
@@ -110,7 +109,7 @@ npm run build
 
 This will generate the production-ready files in the `dist/` folder. These files can then be deployed to Firebase Hosting.
 
-### 5. Download Production Firestore Data
+### 7. Download Production Firestore Data
 
 To download the production Firestore database and use it in the local Firebase emulator, run the following script:
 
@@ -127,7 +126,7 @@ The app is deployed to **Firebase Hosting** under the domain `recipe.vaines.org`
 1. **Deploy to Firebase Hosting**:
 
    ```bash
-     firebase deploy --only hosting
+    firebase deploy --only hosting
    ```
 
 2. After deploying, the app will be live at [https://recipe.vaines.org](https://recipe.vaines.org).
@@ -152,16 +151,17 @@ Here’s an overview of the project structure:
 recipe.vaines.org/
 ├── .github/
 │   └── workflows/
-│       ├── deploy.yml              # GitHub Actions for Firebase deployment
+│       ├── main.yml                # GitHub Actions for Firebase live deployment
 │       └── preview.yml             # GitHub Actions for PR preview deployments
-├── firebase/                       # Firebase project configurations
-│   └── firebase.json               # Firebase configuration file
+├── firebase/                       # Firestore rules/indexes and emulator data
+├── firebase.json                   # Firebase hosting/emulator configuration
 ├── public/                         # Static files like images
 ├── src/                            # Vue.js application code
 │   ├── assets/                     # Images and other assets
 │   ├── components/                 # Vue components (e.g. RecipeList, MenuPlanner)
 │   ├── views/                      # Main views (e.g. Home.vue, RecipeDetails.vue)
-│   └── store/                      # Vuex store (state management)
+│   ├── store.js                    # Vuex store (state management)
+│   └── stores/                     # Additional reactive stores
 ├── package.json                    # NPM dependencies and scripts
 └── README.md                       # Project documentation
 ```
@@ -180,7 +180,7 @@ Stores the IDs of valid users, its very lazy but works sufficiently to gatekeep 
 | -------- | ------- |
 | *Firebase Authentication Identifier*  | displayName: 'my user',<br>email:'myuser@domain.com',<br>enabled:true,<br>,groupId:'{uuid}' |
 
-### Collection: 'recipies-${groupId}'
+### Collection: 'recipes-${groupId}'
 
 The groupID is a UUID assigned to each user at registration
 to support sharing/collaboration a user can change their groupId to match someone elses when shared allowing two or more to share the same set of recipies in the collection
@@ -191,22 +191,25 @@ Stores the recipe data
 | *Id* | *book*: "title",<br>*ingredients*: "comma,seperated,list",<br>*leftovers*: true/false,<br>*timeConsuming*: true/false,<br>*marinateRequired*: true/false,<br>*glutenFree*: true/false,<br>*recipe*: "name" |
 | *Id* | *book*: "title",<br>*ingredients*: "comma,seperated,list",<br>*leftovers*: true/false,<br>*timeConsuming*: true/false,<br>*marinateRequired*: true/false,<br>*glutenFree*: true/false,<br>*recipe*: "name" |
 
+### Collection: 'menus-${groupId}'
+
+Stores the latest saved menu JSON blob for a group.
+
+| Document | Fields |
+| -------- | ------- |
+| `current` | `groupId: "{uuid}"`,<br>`menuBlob: { ... }`,<br>`updatedAt: Timestamp` |
+
 ---
 
 ## Environment Variables
 
 For local development, you may need to set the following environment variables in a `.env` file:
 
-- **FIREBASE_PROJECT_ID**: Your Firebase project ID
-- **FIREBASE_TOKEN**: Firebase CI token for deployments
+- **VUE_APP_FIREBASE_PROJECT_ID**: Your Firebase project ID
+- **VUE_APP_FIREBASE_API_KEY**: Firebase Web API key (used for public Firestore REST URL generation)
+- **VUE_APP_FIRESTORE_EMULATOR_HOST** (optional): Firestore emulator host/port for local links (default `localhost:9086`)
 
-You can obtain the **FIREBASE_TOKEN** by running:
-
-```bash
-firebase login:ci
-```
-
-Then store it in your GitHub repository secrets for automated deployment.
+For CI/deploy, set Firebase secrets in GitHub Actions (for example, `FIREBASE_SERVICE_ACCOUNT` and the required `VUE_APP_FIREBASE_*` values used at build time).
 
 ---
 

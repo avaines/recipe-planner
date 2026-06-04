@@ -56,6 +56,34 @@
                   <label for="groupId" class="block text-sm font-medium text-gray-700 mb-1">Group ID</label>
                   <input id="groupId" type="text" v-model="groupId" :disabled="!isEditingGroupId" class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500" />
                 </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Public Menu JSON URL</label>
+                  <div class="flex items-center gap-2">
+                    <a
+                      v-if="publicMenuUrl"
+                      :href="publicMenuUrl"
+                      target="_blank"
+                      rel="noopener"
+                      class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm"
+                    >
+                      <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                      <span>Open JSON</span>
+                    </a>
+                    <span v-else class="text-sm text-gray-500">URL unavailable (missing group or Firebase config)</span>
+                    <button
+                      v-if="publicMenuUrl"
+                      type="button"
+                      @click="copyPublicMenuUrl"
+                      class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm"
+                      aria-label="Copy public menu URL"
+                      title="Copy URL"
+                    >
+                      <i class="bi bi-copy" aria-hidden="true"></i>
+                      <span>Copy URL</span>
+                    </button>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1">Anyone with this URL can view the saved menu for this group.</p>
+                </div>
               </div>
               <div v-if="isEditingGroupId" class="rounded-md bg-yellow-50 border border-yellow-200 px-4 py-3 text-sm text-yellow-800 mb-4 flex gap-2">
                 <i class="pi pi-exclamation-triangle mt-0.5"></i>
@@ -162,9 +190,37 @@ export default defineComponent({
     userInitials() {
       if(!this.user.name) return '?';
       return this.user.name.split(/\s+/).slice(0,2).map(p=> p.charAt(0).toUpperCase()).join('');
+    },
+    publicMenuUrl() {
+      if (!this.groupId) return '';
+      const projectId = process.env.VUE_APP_FIREBASE_PROJECT_ID;
+      const apiKey = process.env.VUE_APP_FIREBASE_API_KEY;
+      if (!projectId) return '';
+      const collectionName = `menus-${this.groupId}`;
+      const mask = 'mask.fieldPaths=groupId&mask.fieldPaths=updatedAt&mask.fieldPaths=menuBlob';
+
+      const isLocalhost = typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname);
+      if (isLocalhost) {
+        const emulatorHost = process.env.VUE_APP_FIRESTORE_EMULATOR_HOST || 'localhost:9086';
+        return `http://${emulatorHost}/v1/projects/${projectId}/databases/(default)/documents/${collectionName}/current?${mask}`;
+      }
+
+      if (!apiKey) return '';
+      const base = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${collectionName}/current`;
+      return `${base}?key=${encodeURIComponent(apiKey)}&${mask}`;
     }
   },
   methods: {
+    async copyPublicMenuUrl() {
+      if (!this.publicMenuUrl) return;
+      try {
+        await navigator.clipboard.writeText(this.publicMenuUrl);
+        this.toast && this.toast({ type:'success', title:'Copied', message:'Public menu URL copied.' });
+      } catch (error) {
+        console.error('Failed to copy public menu URL:', error);
+        this.toast && this.toast({ type:'error', title:'Copy Failed', message:'Could not copy URL.' });
+      }
+    },
     toggleEditGroupId() {
       this.isEditingGroupId = !this.isEditingGroupId;
     },

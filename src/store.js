@@ -64,6 +64,9 @@ const store = createStore({
 
       state.weekRecipes.w4 = ensureArrayIngredients(uniqueRecipes.slice(daysPerWeek * 3, daysPerWeek * 4));
       state.weekRecipes.w4.shoppingList = objHelpers.getUniqueIngredients(state.weekRecipes.w4);
+    },
+    setWeekRecipesState: (state, weekRecipes) => {
+      state.weekRecipes = weekRecipes;
     }
   },
   actions: {
