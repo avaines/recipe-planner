@@ -9,10 +9,20 @@
               <h2 class="font-semibold">Weekly Menu Plan</h2>
               <p v-if="generatedAt" class="text-xs text-gray-500 mt-1">Generated: {{ formattedGeneratedAt }}</p>
             </div>
-            <button @click="regenerate" :disabled="loading" class="no-print inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+            <div class="no-print flex items-center gap-2">
+            <button @click="loadSavedMenu" :disabled="loading || loadingSaved" class="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+              <i :class="['pi', loadingSaved ? 'pi-spin pi-spinner' : 'pi-download']"></i>
+              <span>{{ loadingSaved ? 'Loading...' : 'Load Saved Menu' }}</span>
+            </button>
+            <button @click="saveCurrentMenu" :disabled="loading || savingMenu || flatRecipes.length===0" class="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+              <i :class="['pi', savingMenu ? 'pi-spin pi-spinner' : 'pi-save']"></i>
+              <span>{{ savingMenu ? 'Saving...' : 'Save Menu' }}</span>
+            </button>
+            <button @click="regenerate" :disabled="loading" class="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
               <i :class="['pi', loading ? 'pi-spin pi-spinner' : 'pi-refresh']"></i>
               <span>{{ loading ? 'Generating...' : 'Regenerate Menu' }}</span>
             </button>
+            </div>
             </div>
             <div class="p-6">
               <div class="menu-scroll">
@@ -60,12 +70,15 @@
 <script>
 import { defineComponent, computed, onMounted, onUnmounted, ref, inject } from 'vue';
 import { useStore } from 'vuex';
+import { auth, db } from '@/plugins/firebase';
 
 export default defineComponent({
   components: {},
   setup(){
     const store = useStore();
     const loading = ref(false);
+    const savingMenu = ref(false);
+    const loadingSaved = ref(false);
     const generatedAt = ref(null);
     const weeks = computed(()=> store.getters.weekRecipes);
     const normalizedWeeks = computed(()=> {
@@ -185,6 +198,103 @@ export default defineComponent({
         loading.value = false;
       }
     };
+
+    const getGroupId = async () => {
+      const user = auth.currentUser;
+      if (!user) return null;
+      const allow = await db.collection('allow-users').doc(user.uid).get();
+      if (!allow.exists) return null;
+      return allow.data().groupId;
+    };
+
+    const normalizeWeekForSave = (week) => {
+      const recipes = Array.isArray(week) ? week : [];
+      return {
+        recipes: recipes.map(r => ({ ...r })),
+        shoppingList: Array.isArray(week?.shoppingList) ? [...week.shoppingList] : []
+      };
+    };
+
+    const saveCurrentMenu = async () => {
+      if (savingMenu.value) return;
+      savingMenu.value = true;
+      try {
+        const groupId = await getGroupId();
+        if (!groupId) {
+          toast && toast({ type:'error', title:'Save Menu', message:'Unable to resolve your group.' });
+          return;
+        }
+        const menuBlob = {
+          version: 1,
+          generatedAt: generatedAt.value ? generatedAt.value.toISOString() : new Date().toISOString(),
+          days,
+          weeks: {
+            w1: normalizeWeekForSave(weeks.value.w1),
+            w2: normalizeWeekForSave(weeks.value.w2),
+            w3: normalizeWeekForSave(weeks.value.w3),
+            w4: normalizeWeekForSave(weeks.value.w4)
+          }
+        };
+
+        await db.collection(`menus-${groupId}`).doc('current').set({
+          groupId,
+          menuBlob,
+          updatedAt: new Date()
+        }, { merge: true });
+
+        toast && toast({ type:'success', title:'Menu', message:'Menu saved.' });
+      } catch (e) {
+        console.error(e);
+        toast && toast({ type:'error', title:'Save Menu', message:'Failed to save menu.' });
+      } finally {
+        savingMenu.value = false;
+      }
+    };
+
+    const hydrateSavedWeek = (savedWeek) => {
+      const recipes = Array.isArray(savedWeek?.recipes) ? savedWeek.recipes.map(r => ({ ...r })) : [];
+      recipes.shoppingList = Array.isArray(savedWeek?.shoppingList) ? [...savedWeek.shoppingList] : [];
+      return recipes;
+    };
+
+    const loadSavedMenu = async () => {
+      if (loadingSaved.value) return;
+      loadingSaved.value = true;
+      try {
+        const groupId = await getGroupId();
+        if (!groupId) {
+          toast && toast({ type:'error', title:'Load Menu', message:'Unable to resolve your group.' });
+          return;
+        }
+        const doc = await db.collection(`menus-${groupId}`).doc('current').get();
+        if (!doc.exists) {
+          toast && toast({ type:'warn', title:'Load Menu', message:'No saved menu found for your group.' });
+          return;
+        }
+        const data = doc.data();
+        const blob = data?.menuBlob;
+        if (!blob || !blob.weeks) {
+          toast && toast({ type:'error', title:'Load Menu', message:'Saved menu format is invalid.' });
+          return;
+        }
+
+        const hydrated = {
+          w1: hydrateSavedWeek(blob.weeks.w1),
+          w2: hydrateSavedWeek(blob.weeks.w2),
+          w3: hydrateSavedWeek(blob.weeks.w3),
+          w4: hydrateSavedWeek(blob.weeks.w4)
+        };
+
+        store.commit('setWeekRecipesState', hydrated);
+        generatedAt.value = blob.generatedAt ? new Date(blob.generatedAt) : new Date();
+        toast && toast({ type:'success', title:'Menu', message:'Saved menu loaded.' });
+      } catch (e) {
+        console.error(e);
+        toast && toast({ type:'error', title:'Load Menu', message:'Failed to load saved menu.' });
+      } finally {
+        loadingSaved.value = false;
+      }
+    };
     const formattedGeneratedAt = computed(()=> generatedAt.value ? generatedAt.value.toLocaleString() : '');
     let mql;
     const mqlHandler = (e) => { if (e.matches) beforePrint(); else afterPrint(); };
@@ -207,7 +317,7 @@ export default defineComponent({
         else if (mql.removeEventListener) mql.removeEventListener('change', mqlHandler);
       }
     });
-  return { weeks, normalizedWeeks, days, flatRecipes, regenerate, loading, generatedAt, formattedGeneratedAt, menuFrame, listsFrame, menuFrameContent, listsFrameContent };
+  return { weeks, normalizedWeeks, days, flatRecipes, regenerate, loading, savingMenu, loadingSaved, saveCurrentMenu, loadSavedMenu, generatedAt, formattedGeneratedAt, menuFrame, listsFrame, menuFrameContent, listsFrameContent };
   }
 });
 </script>
